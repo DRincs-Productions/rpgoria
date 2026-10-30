@@ -117,3 +117,7 @@ type MoveToResult =
 7. Test e documentazione. Segnalare API ancora da approvare anziché inventarle.
 
 **Nota di stato:** questa è una fotografia completa delle decisioni principali emerse finora, non una specifica finale di ogni firma. Eventuali nuove decisioni API prevalgono su questo handoff e devono essere riportate in successivi handoff numerati.
+
+
+### API 27 — Dati di animazione
+`VisualState` include `movementId: string | null`, `speed: number` e `deltaTime: number` (secondi). `speed` è il modulo della velocità visiva effettiva in pixel/secondo, ottenuta dalle componenti `velocityX` e `velocityY` dopo interpolazione Motion, inclusi diagonali, easing e rallentamenti. La view e le animazioni restano interamente sotto il controllo dello sviluppatore.

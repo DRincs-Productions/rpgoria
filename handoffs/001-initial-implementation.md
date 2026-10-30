@@ -1,0 +1,119 @@
+# Rpgoria — Handoff 001: prima implementazione
+
+Stato: specifica iniziale consolidata dalla conversazione progettuale (2026-10-30). Questo documento è un handoff per Codex, **non** autorizza a reinterpretare le decisioni confermate. Implementare Rpgoria per prima; Scrolloria è futura e non rientra in questo milestone.
+
+## 0. Repos e ordine di lavoro
+- Rpgoria: https://github.com/DRincs-Productions/rpgoria — implementazione principale.
+- Documentazione: https://github.com/DRincs-Productions/rpgoria-wiki — successiva, non modificare in questa fase senza richiesta.
+- Scrolloria: https://github.com/DRincs-Productions/scrolloria — futuro consumer di Rpgoria, non implementare ora.
+- Scrolloria wiki: https://github.com/DRincs-Productions/scrolloria-wiki — non modificare ora.
+- Nel workspace Codex saranno disponibili anche i sorgenti di Pixi'VN e NQTR. **Leggerli prima di definire firme, tipi, semantiche e hook**. Non duplicare funzioni già fornite dalle dipendenze.
+
+## 1. Principi e integrazioni
+- Package npm previsto: `@drincs/rpgoria` (verificare configurazione reale del repo). TypeScript, stretta integrazione con Pixi'VN e NQTR; NQTR peer obbligatoria.
+- Un unico package, subpath adapter `/tiled`, `/ldtk`, `/paper-maker`, futuro `/three`. Usare parser/librerie esistenti, non riscrivere i formati.
+- NQTR è la fonte di verità per Map → Location → Room, Room corrente, appartenenza dei personaggi alle Room e routine. **Non implementare un secondo sistema di collocazione dei personaggi**.
+- La Room NQTR è una zona logica; la mappa grafica è associata all'ID Room.
+- Rpgoria non crea né distrugge automaticamente sprite, container o layer dell'utente; l'utente crea e compone gli oggetti grafici.
+- Separare stato spaziale, logica di movimento e rendering. Scrolloria in futuro consumerà internamente Rpgoria, ma avrà API pubbliche proprie; non piegare l'API Rpgoria a Scrolloria.
+
+## 2. API pubbliche confermate
+```ts
+import {
+  rpgoria,
+  movement,
+  RegisteredCharacterMapElements,
+  CharacterMapStoredClass,
+} from "@drincs/rpgoria";
+
+await rpgoria.init({
+  movement: { mode: "free", updateMode: "auto" },
+});
+
+movement.setDirection("liam", "right");
+movement.moveTo("liam", { x: 300, y: 200 });
+
+const inRoom = rpgoria.characters.getByRoom(roomId);
+const current = rpgoria.characters.current;
+```
+- `rpgoria`: singleton condiviso creato dalla libreria, senza `new` da parte del consumer; aree `maps`, `layers`, `routines`, `characters`.
+- `movement`: manager singleton esportato **separatamente** (non `rpgoria.movement`); metodi diretti con ID personaggio, non controller per personaggio.
+- `rpgoria.init({ movement: { mode: "grid" | "free", updateMode: "auto" | "manual" } })`; default updateMode `auto`, ticker Pixi'VN condiviso. Modalità grid/free scelta all'init, non cambiabile in partita. Ripetute chiamate a init devono seguire il comportamento reale di `Game.init()` di Pixi'VN: verificare sorgente, non assumere.
+- Tutte le API che accettano un ID personaggio devono utilizzare il **tipo TypeScript ufficiale Pixi'VN**, dopo averne identificato l'export reale (nessun alias inventato come contratto definitivo).
+- `movement.setDirection(characterId, "up"|"down"|"left"|"right"|"stop")`: direzione persistente fino al successivo comando; stop non modifica facing. In grid termina lo step corrente; in free arresta al prossimo update.
+- `RegisteredCharacterMapElements` esportato direttamente, stile `RegisteredCharacters` di Pixi'VN, con `add(...elements)`, `get(id)`, `values()`, `remove(...)`. Le **firme esatte**, duplicati, ID inesistenti e rimozione devono replicare Pixi'VN dove applicabile: ispezionare sorgente. `add(liamElement, emmaElement)` è variadico, NON array obbligatorio, NON coppie `{characterId,element}`.
+- `CharacterMapStoredClass` **sostituisce** il precedente nome `BaseCharacterMapElement` ed è una classe da **estendere obbligatoriamente** per ogni elemento registrabile. Non consentire la registrazione di implementazioni arbitrarie della sola interfaccia. Il costruttore della classe richiede l'ID del personaggio Pixi'VN; espone `readonly characterId`. Il riferimento all'oggetto PixiJS è contenuto nell'elemento; nome/firma della proprietà grafica **non ancora approvati** (`displayObject` era solo proposta). Definire in modo coerente con il sorgente Pixi'VN e la prossima decisione utente.
+- `rpgoria.characters.getByRoom(roomId): readonly CharacterMapElement[]`; `rpgoria.characters.current: readonly CharacterMapElement[]` (getter, non funzione). NQTR determina chi appartiene alla Room; Rpgoria restituisce solo i relativi elementi **registrati**, escludendo senza errore quelli assenti. `current` legge automaticamente la Room corrente NQTR a ogni accesso, senza `routines.refresh()`. Non aggiunge elementi ai layer.
+- Il registro è persistente attraverso i cambi Room; la collocazione è responsabilità NQTR. Non reintrodurre `rpgoria.routines.getMapElements/currentMapElements`: nomi superati dalla decisione `rpgoria.characters`.
+- `rpgoria.routines.refresh()` rimane un comando esplicito per rivalutare le routine dopo l'avanzamento del tempo di gioco, non per leggere la Room corrente.
+- Il carattere `readonly` riguarda l'array restituito, **non** gli elementi contenuti. La lista non è un'interfaccia per modificare appartenenza Room.
+
+## 3. CharacterMapStoredClass e stato spaziale
+- Nessuna classe `RpgCharacter`; nessuna augmentation di `CharacterInterface` Pixi'VN e nessuna proprietà RPG sugli oggetti personaggio narrativi.
+- Ogni personaggio Pixi'VN ha al massimo un `CharacterMapElement` registrato attivo, individuato dal proprio ID.
+- La classe base obbligatoria custodisce ID e riferimento al visual PixiJS (Sprite/Container, AnimatedSprite, ecc.); il developer la estende per scegliere asset e animazioni. Rpgoria sincronizza stato spaziale; l'elemento sincronizza visual/facing/animazioni sul suo oggetto grafico.
+- Contratto spaziale discusso: `x,y,visualX,visualY,velocityX,velocityY,facing,solid,footprint,movementModel`. Consolidare tipi concreti durante implementazione senza mutare la semantica. `solid` default true; footprint indipendente dalle dimensioni sprite. `movementModel` compatibile Motion.js con modalità walk/run/custom.
+- Il developer crea il visual e lo inserisce esplicitamente nel layer; Rpgoria non lo auto-instanzia, auto-inserisce o distrugge. Il developer controlla anche cleanup e cambio Room.
+
+## 4. Movimento
+- Coordinate `{x,y,unit?:"pixel"|"cell"}`: grid default cell, free default pixel. Celle rettangolari; origine al centro con offset appropriato.
+- Grid: 4 direzioni cardinali, passi completi, tasto tenuto ripete, rilascio termina step, buffer di una direzione per 150ms. Posizione logica cambia a fine step, visual interpolato. Prenotazione footprint swept durante step, arbitrazione deterministica, vietati attraversamenti/scambi fra solidi. Teleport libera prenotazioni; errori riportano allo stato iniziale step.
+- Free: smoothing visivo con ritardo contenuto, movimento continuo, stop al successivo update.
+- Parametri temporali/velocità attraverso `MovementModel` compatibile Motion.js, non vecchi valori numerici hardcoded. Motion.js easing/spring/keyframes per interpolazione ma senza overshoot fisico o violazione collisioni.
+- `moveTo`: pathfinding, nearest reachable come fallback (`reached_nearest`), ripianificazione per ostacoli dinamici, attesa massima 3s prima del fallback, nuovo comando sostituisce precedente, tolleranza arrivo free 1px.
+```ts
+type MoveToCancelReason = "explicit"|"replaced"|"manual_input"|"teleport";
+type MoveToResult =
+  | { status: "reached" }
+  | { status: "reached_nearest" }
+  | { status: "unreachable" }
+  | { status: "cancelled"; reason?: MoveToCancelReason };
+```
+- Errori tecnici rigettano Promise. `cancelMoveTo(): Promise<void>` idempotente, risolve quando fermo; grid completa step salvo teleport, free prossimo update. Prima ragione di cancel prevale salvo override teleport. Input manuale valido annulla moveTo anche se bloccato o mentre si attende collision data.
+- Collision data async condivisi e cache per Room attiva; errori ritentabili, ostacoli dinamici inclusi nel pathfinding, risultati async obsoleti ignorati.
+- Movimento non cambia mai Room; teleport può cambiare Room secondo NQTR. Solo personaggi Room attiva vengono simulati. Al cambio Room cancellare movimenti e prenotazioni; non distruggere visual del developer.
+
+## 5. Eventi e handler
+- Eventi: `movementStart`, `movementEnd`, `positionChanged`, `facingChanged`, `movementBlocked`, `teleported`, `moveToCompleted`, `characterEncounter`.
+- Posizioni tipizzate, blocked deduplicato, completed solo per risultato ordinario, niente movement event per zero distanza salvo completed.
+- Handler concettuale `addMovementHandler({event,actor?,characterId?,once?,handler})`. Decisioni sincrone, globali prima dei locali, ultimo valore esplicito per proprietà prevale, isolamento eccezioni via `handlerError`, snapshot delle liste, no serializzazione; encounter supporta `preventDefault`. Firme precise da consolidare nella fase API.
+
+## 6. Routine e NQTR
+- NQTR gestisce collocazione e priorità/onRun nativi. Rpgoria legge le routine, non duplica il loro sistema.
+- `rpgoria.routines.refresh()` dopo avanzamento clock: routine invariata mantiene posizione NPC; nuova routine con inizio attraversato dall'ultimo refresh: stessa Room cammina dalla posizione attuale, Room diversa spawn nella Room target e cammina; alla prima inizializzazione della routine attiva teleport direttamente alla posizione di partenza.
+- Waypoint e callback custom supportati; nessun trigger automatico di prossimità.
+- Movimenti custom delle routine condividono risultati/cancellazioni/eventi/collisioni di movement e lo stesso ticker, senza ticker indipendente.
+- Hook NQTR sincroni; effetti grafici asincroni successivi.
+
+## 7. Mappe, layer e rendering
+- Adapter per Tiled, LDtk, Paper Maker, futuro Three; registrazione mappa tramite Room ID. Esempio indicativo `registerTiledMap(roomId,{asset})`: asset alias, URL o oggetto già caricato; `prepare(roomId)` esplicito, **nessun** `maps.activate` (Room NQTR è autorevole).
+- Rpgoria espone root `rpgoria.layers.container` (PixiJS Container); developer lo aggiunge a Pixi'VN, es. `canvas.layers.add("rpg",rpgoria.layers.container)`.
+- Nel root si aggiungono **singoli layer** della mappa preparata, non il container di tutta la mappa; developer decide ordine/composizione.
+- Layer `static` (default) e `movement` (Y-sort). Più movement layer ordinati separatamente, nessun sort incrociato. Elementi statici/dinamici individuali ordinabili per depthY con priorità proprietà > override > base automatica. Tile Layer piatto come unità; tile object in Object Layer individualmente ordinabili.
+- Elementi grafici di CharacterMapStoredClass aggiunti dal developer al movement layer prescelto. Layer lifecycle interamente developer-controlled, inclusi cambio Room, ricostruzione e cleanup. Rpgoria deve evitare riferimenti stale a oggetti distrutti.
+- Un ticker condiviso Pixi'VN per tutti i movimenti attivi in modalità `auto`, si arresta quando idle salvo controlli di oggetti dinamici sortable; modalità `manual` con update esterno alternativa. Ticker effetti separati ammessi.
+
+## 8. Fuori scope / TODO
+- Fade automatico di tetti/edifici per aree interne, con Motion.js alpha e proprietà Tiled: TODO, non MVP.
+- Edifici 2.5D e personaggi 3D futuri: rendering 3D su texture poi PixiJS sprite in movement layer, Y-sort come unità; niente coordinate 3D nel core adesso.
+- Interazioni, inventario, combattimento, trigger e altri sistemi gameplay: TODO.
+- Scrolloria futuro: side-scroller X-only free, salto opzionale, attraversamento personaggi default, encounter può bloccare; non implementare qui.
+
+## 9. Verifiche obbligatorie prima di scrivere implementazione
+1. Ispezionare API e sorgente di `RegisteredCharacters` Pixi'VN: variadic add, remove, get inesistente, duplicati, values, typing, import ufficiale ID.
+2. Ispezionare `Game.init()` Pixi'VN: ripetizione chiamate e ticker/lifecycle.
+3. Ispezionare NQTR: API reali Room corrente, query personaggi per Room, routine e refresh, eventi, priorità/onRun. Non ipotizzare nomi.
+4. Ispezionare Motion.js e dipendenze già presenti prima di fissare shape di `MovementModel`.
+5. Risolvere i dettagli API **ancora aperti** con l'utente prima di esporli come contratti stabili, in particolare nome pubblico del visual PixiJS (`displayObject` vs `view` vs getter), firme eventi/handler, adapter e map/layer helpers.
+6. Aggiungere test per registro stile Pixi'VN, filtro Room, current dinamico, esclusione mancanti, readonly typing, cambio Room, movimento e collisioni.
+
+## 10. Priorità prima implementazione
+1. Setup package e verifiche dipendenze.
+2. `CharacterMapStoredClass` obbligatoria, registro e `rpgoria.characters` integrati con NQTR.
+3. Init singleton e movement manager con ticker auto/manual.
+4. Movimento grid/free, collisioni e pathfinding.
+5. Routine NQTR, eventi e handler.
+6. Map adapters e layer composition.
+7. Test e documentazione. Segnalare API ancora da approvare anziché inventarle.
+
+**Nota di stato:** questa è una fotografia completa delle decisioni principali emerse finora, non una specifica finale di ogni firma. Eventuali nuove decisioni API prevalgono su questo handoff e devono essere riportate in successivi handoff numerati.

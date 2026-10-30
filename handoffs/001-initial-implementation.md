@@ -129,3 +129,7 @@ Alla conclusione effettiva del movimento, Rpgoria invoca un'ultima volta `onVisu
 
 ### API 29 — Sincronizzazione iniziale alla registrazione
 Quando `RegisteredCharacterMapElements.add(...)` registra un elemento, Rpgoria richiama automaticamente il suo `onVisualUpdate(state)` con posizione e facing iniziali, `velocityX: 0`, `velocityY: 0`, `speed: 0`, `isMoving: false`, `movementId: null`. Il developer predispone la propria view prima della registrazione; Rpgoria non crea né inserisce automaticamente la view nei layer. Lo stesso hook copre inizializzazione, movimento e arresto.
+
+
+### API 30 — Facing cardinale e angolo direzionale
+`VisualState.facing` resta a quattro direzioni (`up`, `down`, `left`, `right`), mentre si aggiunge `movementAngle: number | null` per rendere disponibile la direzione effettiva del movimento, anche diagonale. Angolo in radianti da `atan2(velocityY, velocityX)` nelle coordinate schermo (0 destra, π/2 basso, π sinistra, -π/2 alto); `null` quando il personaggio è fermo. Il developer può usare facing, angolo o entrambi per la propria view 2D/3D; Rpgoria non ruota la view automaticamente.

@@ -125,3 +125,7 @@ type MoveToResult =
 
 ### API 28 — Ultimo aggiornamento visivo
 Alla conclusione effettiva del movimento, Rpgoria invoca un'ultima volta `onVisualUpdate(state)` con `speed: 0`, `velocityX: 0`, `velocityY: 0`, `isMoving: false`, `movementId: null`; `x`, `y`, `facing` conservano i valori finali. Durante un rallentamento Motion `speed` decresce progressivamente e `isMoving` resta true fino al termine effettivo. Nessun aggiornamento continuo idle obbligatorio. La view/animazione idle è gestita dal developer.
+
+
+### API 29 — Sincronizzazione iniziale alla registrazione
+Quando `RegisteredCharacterMapElements.add(...)` registra un elemento, Rpgoria richiama automaticamente il suo `onVisualUpdate(state)` con posizione e facing iniziali, `velocityX: 0`, `velocityY: 0`, `speed: 0`, `isMoving: false`, `movementId: null`. Il developer predispone la propria view prima della registrazione; Rpgoria non crea né inserisce automaticamente la view nei layer. Lo stesso hook copre inizializzazione, movimento e arresto.

@@ -153,3 +153,7 @@ Il contratto pubblico `VisualState` NON espone più `movementAngle`: espone `rot
 
 ### API 36 — Aggiornamento visivo su cambio di facing da fermo
 Quando cambia soltanto il facing senza spostamento, Rpgoria richiama immediatamente `onVisualUpdate(state)` con nuovo facing, `rotation` e `angle` coerenti, posizione invariata, `velocityX=0`, `velocityY=0`, `speed=0`, `isMoving=false`, `movementId=null`. Il callback non richiede un movimento attivo. L'evento pubblico `facingChanged` resta disponibile per logica di gioco; il developer decide come aggiornare la propria view.
+
+
+### API 37 — Sincronizzazione visiva dopo teletrasporto
+Dopo un teletrasporto riuscito Rpgoria richiama immediatamente `onVisualUpdate(state)` con nuova posizione non interpolata, `velocityX=0`, `velocityY=0`, `speed=0`, `isMoving=false`, `movementId=null`; facing, rotation e angle riflettono l'orientamento risultante. Nessun hook dedicato `onTeleported()` nella classe base. L'evento pubblico `teleported` rimane disponibile per effetti speciali gestiti dal developer.

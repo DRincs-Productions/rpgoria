@@ -133,3 +133,7 @@ Quando `RegisteredCharacterMapElements.add(...)` registra un elemento, Rpgoria r
 
 ### API 30 — Facing cardinale e angolo direzionale
 `VisualState.facing` resta a quattro direzioni (`up`, `down`, `left`, `right`), mentre si aggiunge `movementAngle: number | null` per rendere disponibile la direzione effettiva del movimento, anche diagonale. Angolo in radianti da `atan2(velocityY, velocityX)` nelle coordinate schermo (0 destra, π/2 basso, π sinistra, -π/2 alto); `null` quando il personaggio è fermo. Il developer può usare facing, angolo o entrambi per la propria view 2D/3D; Rpgoria non ruota la view automaticamente.
+
+
+### API 31 — Facing durante le diagonali
+Il `facing` cardinale viene determinato dall'asse della velocità effettiva predominante: se `abs(velocityX) > abs(velocityY)`, left/right secondo il segno di X; se `abs(velocityY) > abs(velocityX)`, up/down secondo il segno di Y. In caso di parità, conservare il facing precedente se compatibile con una delle due direzioni componenti del movimento. `movementAngle` continua a esprimere la direzione diagonale precisa. Da specificare successivamente il fallback deterministico in parità quando il facing precedente non è compatibile.

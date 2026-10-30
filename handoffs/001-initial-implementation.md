@@ -145,3 +145,7 @@ Decisione successiva che sostituisce il precedente comportamento nullo dell'API 
 
 ### API 33 — Nomi angolari come PixiJS (sostituisce API 30/32)
 Il contratto pubblico `VisualState` NON espone più `movementAngle`: espone `rotation: number` in radianti e `angle: number` in gradi, due rappresentazioni della medesima direzione (`angle = rotation * 180 / Math.PI`). Entrambe persistono da fermo, conservando l'ultima direzione. La scelta se applicare tali valori alla view PixiJS/Spine/3D rimane esclusivamente del developer. I riferimenti storici alle API 30/32 vanno interpretati secondo questa decisione più recente. **API 34 confermata:** valore iniziale derivato automaticamente dal facing iniziale: right = 0 rad / 0°, down = π/2 rad / 90°, left = π rad / 180°, up = -π/2 rad / -90°. Disponibile già nel primo VisualState alla registrazione.
+
+
+### API 35 — Nessuna interpolazione angolare nel core
+`VisualState.rotation` (radianti) e `angle` (gradi) riflettono immediatamente la direzione effettiva del movimento, comprese le diagonali. Rpgoria non interpola la rotazione grafica: eventuale smoothing/turning animation via Motion o altre tecniche è responsabilità del developer sulla propria view. L'interpolazione della posizione rimane a carico di Rpgoria. Quando il personaggio è fermo, gli angoli persistono.

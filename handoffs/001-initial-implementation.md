@@ -42,7 +42,7 @@ const current = rpgoria.characters.current;
 - Tutte le API che accettano un ID personaggio devono utilizzare il **tipo TypeScript ufficiale Pixi'VN**, dopo averne identificato l'export reale (nessun alias inventato come contratto definitivo).
 - `movement.setDirection(characterId, "up"|"down"|"left"|"right"|"stop")`: direzione persistente fino al successivo comando; stop non modifica facing. In grid termina lo step corrente; in free arresta al prossimo update.
 - `RegisteredCharacterMapElements` esportato direttamente, stile `RegisteredCharacters` di Pixi'VN, con `add(...elements)`, `get(id)`, `values()`, `remove(...)`. Le **firme esatte**, duplicati, ID inesistenti e rimozione devono replicare Pixi'VN dove applicabile: ispezionare sorgente. `add(liamElement, emmaElement)` è variadico, NON array obbligatorio, NON coppie `{characterId,element}`.
-- `CharacterMapStoredClass` **sostituisce** il precedente nome `BaseCharacterMapElement` ed è una classe da **estendere obbligatoriamente** per ogni elemento registrabile. Non consentire la registrazione di implementazioni arbitrarie della sola interfaccia. Il costruttore della classe richiede l'ID del personaggio Pixi'VN; espone `readonly characterId`. Il riferimento all'oggetto PixiJS è contenuto nell'elemento; nome/firma della proprietà grafica **non ancora approvati** (`displayObject` era solo proposta). Definire in modo coerente con il sorgente Pixi'VN e la prossima decisione utente.
+- `CharacterMapStoredClass` **sostituisce** il precedente nome `BaseCharacterMapElement` ed è una classe da **estendere obbligatoriamente** per ogni elemento registrabile. Non consentire la registrazione di implementazioni arbitrarie della sola interfaccia. Il costruttore della classe richiede l'ID del personaggio Pixi'VN; espone `readonly characterId`. **API 22 confermata:** Rpgoria NON impone proprietà o metodi per accedere alla view (`displayObject`, `view`, `getDisplayObject()` non fanno parte del contratto obbligatorio). Lo sviluppatore sceglie autonomamente se e come associare/recuperare la grafica PixiJS e in quale layer inserirla.
 - `rpgoria.characters.getByRoom(roomId): readonly CharacterMapElement[]`; `rpgoria.characters.current: readonly CharacterMapElement[]` (getter, non funzione). NQTR determina chi appartiene alla Room; Rpgoria restituisce solo i relativi elementi **registrati**, escludendo senza errore quelli assenti. `current` legge automaticamente la Room corrente NQTR a ogni accesso, senza `routines.refresh()`. Non aggiunge elementi ai layer.
 - Il registro è persistente attraverso i cambi Room; la collocazione è responsabilità NQTR. Non reintrodurre `rpgoria.routines.getMapElements/currentMapElements`: nomi superati dalla decisione `rpgoria.characters`.
 - `rpgoria.routines.refresh()` rimane un comando esplicito per rivalutare le routine dopo l'avanzamento del tempo di gioco, non per leggere la Room corrente.
@@ -51,7 +51,7 @@ const current = rpgoria.characters.current;
 ## 3. CharacterMapStoredClass e stato spaziale
 - Nessuna classe `RpgCharacter`; nessuna augmentation di `CharacterInterface` Pixi'VN e nessuna proprietà RPG sugli oggetti personaggio narrativi.
 - Ogni personaggio Pixi'VN ha al massimo un `CharacterMapElement` registrato attivo, individuato dal proprio ID.
-- La classe base obbligatoria custodisce ID e riferimento al visual PixiJS (Sprite/Container, AnimatedSprite, ecc.); il developer la estende per scegliere asset e animazioni. Rpgoria sincronizza stato spaziale; l'elemento sincronizza visual/facing/animazioni sul suo oggetto grafico.
+- La classe base obbligatoria custodisce l'ID e il contratto spaziale, **non** richiede un riferimento PixiJS. Il developer la estende e decide liberamente come ottenere/associare la view (Sprite/Container/AnimatedSprite o altro) e come sincronizzare visual/facing/animazioni con essa. Rpgoria gestisce stato spaziale e movimento senza imporre un'API grafica.
 - Contratto spaziale discusso: `x,y,visualX,visualY,velocityX,velocityY,facing,solid,footprint,movementModel`. Consolidare tipi concreti durante implementazione senza mutare la semantica. `solid` default true; footprint indipendente dalle dimensioni sprite. `movementModel` compatibile Motion.js con modalità walk/run/custom.
 - Il developer crea il visual e lo inserisce esplicitamente nel layer; Rpgoria non lo auto-instanzia, auto-inserisce o distrugge. Il developer controlla anche cleanup e cambio Room.
 
@@ -90,7 +90,7 @@ type MoveToResult =
 - Rpgoria espone root `rpgoria.layers.container` (PixiJS Container); developer lo aggiunge a Pixi'VN, es. `canvas.layers.add("rpg",rpgoria.layers.container)`.
 - Nel root si aggiungono **singoli layer** della mappa preparata, non il container di tutta la mappa; developer decide ordine/composizione.
 - Layer `static` (default) e `movement` (Y-sort). Più movement layer ordinati separatamente, nessun sort incrociato. Elementi statici/dinamici individuali ordinabili per depthY con priorità proprietà > override > base automatica. Tile Layer piatto come unità; tile object in Object Layer individualmente ordinabili.
-- Elementi grafici di CharacterMapStoredClass aggiunti dal developer al movement layer prescelto. Layer lifecycle interamente developer-controlled, inclusi cambio Room, ricostruzione e cleanup. Rpgoria deve evitare riferimenti stale a oggetti distrutti.
+- Le view grafiche eventualmente associate alle sottoclassi di CharacterMapStoredClass vengono ottenute e aggiunte dal developer al layer prescelto, senza un accessor imposto da Rpgoria. Layer lifecycle interamente developer-controlled, inclusi cambio Room, ricostruzione e cleanup. Rpgoria deve evitare riferimenti stale a oggetti distrutti.
 - Un ticker condiviso Pixi'VN per tutti i movimenti attivi in modalità `auto`, si arresta quando idle salvo controlli di oggetti dinamici sortable; modalità `manual` con update esterno alternativa. Ticker effetti separati ammessi.
 
 ## 8. Fuori scope / TODO
@@ -104,7 +104,7 @@ type MoveToResult =
 2. Ispezionare `Game.init()` Pixi'VN: ripetizione chiamate e ticker/lifecycle.
 3. Ispezionare NQTR: API reali Room corrente, query personaggi per Room, routine e refresh, eventi, priorità/onRun. Non ipotizzare nomi.
 4. Ispezionare Motion.js e dipendenze già presenti prima di fissare shape di `MovementModel`.
-5. Risolvere i dettagli API **ancora aperti** con l'utente prima di esporli come contratti stabili, in particolare nome pubblico del visual PixiJS (`displayObject` vs `view` vs getter), firme eventi/handler, adapter e map/layer helpers.
+5. Risolvere i dettagli API **ancora aperti** con l'utente prima di esporli come contratti stabili, in particolare firme eventi/handler, adapter e map/layer helpers. **API 22 chiusa:** nessun accessor obbligatorio della view.
 6. Aggiungere test per registro stile Pixi'VN, filtro Room, current dinamico, esclusione mancanti, readonly typing, cambio Room, movimento e collisioni.
 
 ## 10. Priorità prima implementazione

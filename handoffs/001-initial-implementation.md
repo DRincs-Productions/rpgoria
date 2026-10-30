@@ -149,3 +149,7 @@ Il contratto pubblico `VisualState` NON espone più `movementAngle`: espone `rot
 
 ### API 35 — Nessuna interpolazione angolare nel core
 `VisualState.rotation` (radianti) e `angle` (gradi) riflettono immediatamente la direzione effettiva del movimento, comprese le diagonali. Rpgoria non interpola la rotazione grafica: eventuale smoothing/turning animation via Motion o altre tecniche è responsabilità del developer sulla propria view. L'interpolazione della posizione rimane a carico di Rpgoria. Quando il personaggio è fermo, gli angoli persistono.
+
+
+### API 36 — Aggiornamento visivo su cambio di facing da fermo
+Quando cambia soltanto il facing senza spostamento, Rpgoria richiama immediatamente `onVisualUpdate(state)` con nuovo facing, `rotation` e `angle` coerenti, posizione invariata, `velocityX=0`, `velocityY=0`, `speed=0`, `isMoving=false`, `movementId=null`. Il callback non richiede un movimento attivo. L'evento pubblico `facingChanged` resta disponibile per logica di gioco; il developer decide come aggiornare la propria view.

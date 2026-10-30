@@ -132,12 +132,16 @@ Quando `RegisteredCharacterMapElements.add(...)` registra un elemento, Rpgoria r
 
 
 ### API 30 — Facing cardinale e angolo direzionale
-`VisualState.facing` resta a quattro direzioni (`up`, `down`, `left`, `right`), mentre si aggiunge `movementAngle: number` per rendere disponibile la direzione effettiva del movimento, anche diagonale. Angolo in radianti da `atan2(velocityY, velocityX)` nelle coordinate schermo (0 destra, π/2 basso, π sinistra, -π/2 alto); quando il personaggio è fermo conserva l'ultimo angolo valido. Il developer può usare facing, angolo o entrambi per la propria view 2D/3D; Rpgoria non ruota la view automaticamente.
+`VisualState.facing` resta a quattro direzioni (`up`, `down`, `left`, `right`), mentre si aggiunge `rotation: number` (radianti) e `angle: number` (gradi) per rendere disponibile la direzione effettiva del movimento, anche diagonale. Angolo in radianti da `atan2(velocityY, velocityX)` nelle coordinate schermo (0 destra, π/2 basso, π sinistra, -π/2 alto); quando il personaggio è fermo conserva l'ultimo angolo valido. Il developer può usare facing, angolo o entrambi per la propria view 2D/3D; Rpgoria non ruota la view automaticamente.
 
 
 ### API 31 — Facing durante le diagonali
-Il `facing` cardinale viene determinato dall'asse della velocità effettiva predominante: se `abs(velocityX) > abs(velocityY)`, left/right secondo il segno di X; se `abs(velocityY) > abs(velocityX)`, up/down secondo il segno di Y. In caso di parità, conservare il facing precedente se compatibile con una delle due direzioni componenti del movimento. `movementAngle` continua a esprimere la direzione diagonale precisa. Da specificare successivamente il fallback deterministico in parità quando il facing precedente non è compatibile.
+Il `facing` cardinale viene determinato dall'asse della velocità effettiva predominante: se `abs(velocityX) > abs(velocityY)`, left/right secondo il segno di X; se `abs(velocityY) > abs(velocityX)`, up/down secondo il segno di Y. In caso di parità, conservare il facing precedente se compatibile con una delle due direzioni componenti del movimento. `rotation`/`angle` continua a esprimere la direzione diagonale precisa. Da specificare successivamente il fallback deterministico in parità quando il facing precedente non è compatibile.
 
 
 ### API 32 — Revisione di movementAngle
-Decisione successiva che sostituisce il precedente comportamento nullo dell'API 30: `movementAngle` è sempre `number` e mantiene l'ultimo angolo valido quando il movimento termina; non serve `facingAngle`. Alla conclusione del movimento `speed=0`, `isMoving=false`, `movementId=null`, mentre `movementAngle` e `facing` restano quelli precedenti. Il valore iniziale per un personaggio mai mosso è ancora da confermare.
+Decisione successiva che sostituisce il precedente comportamento nullo dell'API 30: `rotation`/`angle` è sempre `number` e mantiene l'ultimo angolo valido quando il movimento termina; non serve `facingAngle`. Alla conclusione del movimento `speed=0`, `isMoving=false`, `movementId=null`, mentre `rotation`/`angle` e `facing` restano quelli precedenti. Il valore iniziale per un personaggio mai mosso è ancora da confermare.
+
+
+### API 33 — Nomi angolari come PixiJS (sostituisce API 30/32)
+Il contratto pubblico `VisualState` NON espone più `movementAngle`: espone `rotation: number` in radianti e `angle: number` in gradi, due rappresentazioni della medesima direzione (`angle = rotation * 180 / Math.PI`). Entrambe persistono da fermo, conservando l'ultima direzione. La scelta se applicare tali valori alla view PixiJS/Spine/3D rimane esclusivamente del developer. I riferimenti storici alle API 30/32 vanno interpretati secondo questa decisione più recente. Valore iniziale/derivazione dal facing ancora da consolidare.

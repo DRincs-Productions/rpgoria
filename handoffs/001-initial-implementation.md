@@ -233,3 +233,7 @@ Decisione confermata: `rpgoria.characters.removeFromMap(characterId)` invoca `on
 
 ### API 54 — Ordine degli handler di rimozione
 Decisione confermata: durante `rpgoria.characters.removeFromMap(characterId)`, invocare gli handler sincroni `onCharacterRemove(characterId, layer)` di **tutti i layer dei personaggi registrati nell'ordine cronologico di registrazione dei layer** (dal primo all'ultimo). Nessuna priorità configurabile o inversione. Ogni handler deve tollerare l'assenza della view nel proprio layer. Gli errori sono isolati (API 52) e non impediscono l'esecuzione dei successivi. Il comportamento in caso di registrazione/rimozione di layer durante l'iterazione è da definire separatamente.
+
+
+### API 55 — Snapshot dei layer all'inizio di removeFromMap
+Decisione confermata: all'inizio di `rpgoria.characters.removeFromMap(characterId)` Rpgoria acquisisce uno **snapshot dei layer dei personaggi registrati e dei rispettivi handler `onCharacterRemove`**, nell'ordine cronologico di registrazione (API 54). Invoca tutti gli handler presenti nello snapshot anche se, durante l'operazione, un handler aggiunge o rimuove layer; tali mutazioni hanno effetto soltanto dalle successive chiamate a `removeFromMap`. Lo snapshot deve mantenere il riferimento all'oggetto layer originario per ogni callback (`onCharacterRemove(characterId, layer)`). Restano validi l'isolamento degli errori (API 52) e la rimozione logica definitiva (API 48 revisionata).

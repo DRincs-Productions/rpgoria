@@ -237,3 +237,7 @@ Decisione confermata: durante `rpgoria.characters.removeFromMap(characterId)`, i
 
 ### API 55 — Snapshot dei layer all'inizio di removeFromMap
 Decisione confermata: all'inizio di `rpgoria.characters.removeFromMap(characterId)` Rpgoria acquisisce uno **snapshot dei layer dei personaggi registrati e dei rispettivi handler `onCharacterRemove`**, nell'ordine cronologico di registrazione (API 54). Invoca tutti gli handler presenti nello snapshot anche se, durante l'operazione, un handler aggiunge o rimuove layer; tali mutazioni hanno effetto soltanto dalle successive chiamate a `removeFromMap`. Lo snapshot deve mantenere il riferimento all'oggetto layer originario per ogni callback (`onCharacterRemove(characterId, layer)`). Restano validi l'isolamento degli errori (API 52) e la rimozione logica definitiva (API 48 revisionata).
+
+
+### API 56 — Idempotenza di removeFromMap
+Decisione confermata: `rpgoria.characters.removeFromMap(characterId)` è **idempotente** quando il personaggio è già stato rimosso e non esiste più stato spaziale persistente per il suo `characterId`: termina normalmente, senza invocare di nuovo alcun `onCharacterRemove`, senza modificare layer/collisioni e senza generare errori per l'assenza. La prima rimozione esegue la sequenza completa delle API 48–55. Il caso distinto di personaggio non registrato ma con stato persistente ancora presente richiede una decisione esplicita successiva.

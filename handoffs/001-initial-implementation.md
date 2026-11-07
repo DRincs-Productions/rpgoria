@@ -345,3 +345,7 @@ Decisione confermata: ogni **operazione di registrazione** di un layer ha una pr
 
 ### API 82 — Registrazione duplicata dello stesso layer vietata
 Decisione confermata: lo **stesso oggetto layer PixiJS** può avere **una sola registrazione attiva** in Rpgoria. Un tentativo di registrare nuovamente tale oggetto mentre la registrazione precedente è ancora attiva **genera un errore** e non modifica la registrazione esistente: identità interna, configurazione, handler e ordine di registrazione rimangono invariati. Non trattare il duplicato come operazione idempotente e non sostituire automaticamente la registrazione. È invece lecito deregistrare prima il layer e registrare successivamente lo stesso oggetto con una **nuova identità** (API 81); durante la fase Y-sort questa nuova registrazione partecipa dal frame successivo.
+
+
+### API 83 — Deregistrazione layer esclusivamente logica
+Decisione confermata: la deregistrazione di un layer rimuove **solo la registrazione logica** in Rpgoria e interrompe la gestione del layer (incluso il suo Y-sort); **non** rimuove o riposiziona il Container PixiJS del layer in `rpgoria.layers.container` o altrove nella gerarchia, **non** distrugge il layer e **non** distrugge né modifica i suoi figli. Il developer resta responsabile della gestione della scena PixiJS. È consentito registrare nuovamente lo stesso oggetto layer dopo la deregistrazione, con nuova identità (API 81); una seconda registrazione mentre è ancora attivo resta un errore (API 82).

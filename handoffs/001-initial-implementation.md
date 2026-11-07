@@ -197,3 +197,7 @@ Decisione confermata: lo stato spaziale logico dei personaggi (`characterId` →
 
 ### API 46 — Cancellazione esplicita dello stato spaziale
 Decisione confermata: esporre `rpgoria.characters.clearState(characterId)` per eliminare lo stato spaziale persistente associato all'ID (posizione e orientamento, inclusi `facing`, `rotation`, `angle`, nei dati di salvataggio). È consentito **soltanto se il personaggio non è registrato** in `RegisteredCharacterMapElements`: se ancora registrato, l'operazione viene rifiutata senza mutare lo stato. Il developer deve prima deregistrarlo (API 42–43). Non distruggere né modificare view o risorse grafiche. Una successiva registrazione dopo `clearState` usa i valori iniziali dell'elemento, non lo stato cancellato. La firma di ritorno/errore specifica resta da consolidare con le convenzioni Pixi'VN.
+
+
+### API 47 — Idempotenza di clearState
+Decisione confermata: `rpgoria.characters.clearState(characterId)` è idempotente se il personaggio non è registrato: elimina lo stato persistente quando presente, altrimenti termina normalmente senza errori. Se il personaggio è tuttora registrato in `RegisteredCharacterMapElements`, genera un errore e non modifica alcun dato, anche quando non esiste stato persistente. L'API deve essere sicura da richiamare ripetutamente dopo la deregistrazione; la firma precisa del valore di ritorno sarà consolidata separatamente.

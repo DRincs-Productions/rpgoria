@@ -293,3 +293,7 @@ L'utente ha cambiato la decisione: in `updateMode: "auto"` il **ticker condiviso
 
 ### API 69 — Ordinamento Y stabile in caso di parità
 Decisione confermata: per tutti i layer con `sortMode: "y"`, quando due oggetti hanno la **stessa profondità effettiva**, lo Y-sort è **stabile** e conserva il loro ordine relativo precedente nel Container. Non introdurre una proprietà `sortPriority` come criterio secondario e non risolvere le parità con identificatori interni indipendenti dall'ordine preesistente. Resta invariata la precedenza già decisa per i valori di profondità espliciti rispetto alla `y` locale automatica. La stabilità deve valere tra frame successivi e per i figli diretti ordinabili (API 62–64). In modalità `auto`, il ticker rimane sempre attivo secondo API 68.
+
+
+### API 70 — Y-sort include gli oggetti nascosti
+Decisione confermata: tutti i figli diretti di un layer con `sortMode: "y"` partecipano all'ordinamento **anche quando `visible === false`**. La visibilità non altera il valore di profondità né esclude l'oggetto dal sort; quando torna visibile, è già ordinato correttamente. Non introdurre opzioni di inclusione/esclusione per visibilità. Resta stabile l'ordinamento a parità di profondità (API 69), con aggiornamento a ogni frame del ticker in modalità auto (API 64, 68) e soli figli diretti (API 62–63).

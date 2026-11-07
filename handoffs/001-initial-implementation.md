@@ -173,3 +173,7 @@ Decisione confermata: gli errori di `onVisualUpdate()` devono preservare `charac
 
 ### API 40 — Isolamento degli errori del callback visivo
 Se `onVisualUpdate()` genera un errore, Rpgoria lo intercetta senza interrompere movimento, collisioni o altri personaggi. Conserva contesto strutturato (`characterId`, `operation`, `cause`) secondo API 39; ritenta normalmente il callback ai successivi aggiornamenti (nessuna disabilitazione permanente automatica). La view potrebbe essere temporaneamente non sincronizzata. Inoltrare al sistema errori Pixi'VN soltanto tramite un punto di ingresso pubblico verificato nel suo sorgente; non inventare API o un sistema parallelo.
+
+
+### API 41 — Hook visivo strettamente sincrono
+`CharacterMapStoredClass` espone `protected onVisualUpdate(state: VisualState): void` come callback sincrono. Rpgoria non attende Promise né operazioni di caricamento durante il ticker. Il developer prepara e carica le risorse grafiche separatamente e gestisce l'eventuale asincronia fuori dal callback. Le eccezioni sincrone del callback vengono isolate secondo API 40 e contestualizzate secondo API 39.

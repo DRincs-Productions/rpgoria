@@ -333,3 +333,7 @@ Decisione confermata: all'inizio di ogni singola operazione Y-sort di un layer, 
 
 ### API 79 — Ordine di esecuzione dello Y-sort tra layer
 Decisione confermata: quando più layer hanno `sortMode: "y"`, Rpgoria esegue il rispettivo Y-sort **nell'ordine di registrazione dei layer**. Ciascun layer è ordinato indipendentemente con il proprio snapshot dei figli e delle profondità (API 77–78). L'ordine di esecuzione non dipende dalla posizione corrente dei layer in `rpgoria.layers.container`, né modifica l'ordine di rendering/composizione dei layer scelto dal developer. Mantenere l'ordine di registrazione deterministico.
+
+
+### API 80 — Snapshot dei layer a inizio fase Y-sort
+Decisione confermata: **all'inizio della fase Y-sort di ogni frame**, Rpgoria acquisisce uno snapshot dei layer registrati con `sortMode: "y"`, nell'ordine di registrazione (API 79). Prima di ordinare ciascun layer nello snapshot, verifica che sia **ancora registrato**; se è stato deregistrato durante la fase, lo salta. I layer aggiunti dopo lo snapshot vengono ordinati **dal frame successivo**. Le operazioni di registrazione/rimozione dei layer hanno effetto immediato sul registro; non vengono differite, ma la fase corrente usa lo snapshot. Per ciascun layer ancora valido si acquisiscono poi gli snapshot di figli e profondità al momento del suo singolo sort (API 77–78), dopo `onVisualUpdate` (API 75–76).

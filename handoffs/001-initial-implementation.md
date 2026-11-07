@@ -177,3 +177,7 @@ Se `onVisualUpdate()` genera un errore, Rpgoria lo intercetta senza interrompere
 
 ### API 41 — Hook visivo strettamente sincrono
 `CharacterMapStoredClass` espone `protected onVisualUpdate(state: VisualState): void` come callback sincrono. Rpgoria non attende Promise né operazioni di caricamento durante il ticker. Il developer prepara e carica le risorse grafiche separatamente e gestisce l'eventuale asincronia fuori dal callback. Le eccezioni sincrone del callback vengono isolate secondo API 40 e contestualizzate secondo API 39.
+
+
+### API 42 — Rimozione dal registro e ownership della view
+Decisione confermata: `RegisteredCharacterMapElements.remove(...)` mantiene firma/semantica del registro Pixi'VN (da verificare nel sorgente), ma la rimozione interrompe ogni successiva invocazione di `onVisualUpdate()` sull'elemento rimosso. Rpgoria non rimuove né distrugge automaticamente Sprite, Container, Spine, modelli 3D o altre risorse grafiche: gestione e cleanup della view rimangono esclusivamente al developer. Non introdurre `onRemoved()` nella classe base per questa finalità. Garantire che eventuali update già pianificati non richiamino un elemento deregistrato.

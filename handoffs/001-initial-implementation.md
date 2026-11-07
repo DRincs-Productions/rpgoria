@@ -229,3 +229,7 @@ Decisione confermata: se un `onCharacterRemove(characterId, layer)` sincrono gen
 
 ### API 53 — Invocare gli handler di tutti i layer personaggi
 Decisione confermata: `rpgoria.characters.removeFromMap(characterId)` invoca `onCharacterRemove(characterId, layer)` **su tutti i layer attualmente registrati come layer dei personaggi**, non soltanto sul layer principale o su quelli esplicitamente associati all'ID. Ogni handler decide autonomamente se il layer contiene una view del personaggio e la rimuove se presente; deve quindi tollerare l'assenza della view. Questo copre sprite, ombre e altri elementi distribuiti su layer differenti senza un registro personaggio→layer. Gli errori di un handler non impediscono di chiamare gli altri (API 52). L'ordine di esecuzione e le eventuali mutazioni dell'elenco dei layer durante la rimozione restano da definire.
+
+
+### API 54 — Ordine degli handler di rimozione
+Decisione confermata: durante `rpgoria.characters.removeFromMap(characterId)`, invocare gli handler sincroni `onCharacterRemove(characterId, layer)` di **tutti i layer dei personaggi registrati nell'ordine cronologico di registrazione dei layer** (dal primo all'ultimo). Nessuna priorità configurabile o inversione. Ogni handler deve tollerare l'assenza della view nel proprio layer. Gli errori sono isolati (API 52) e non impediscono l'esecuzione dei successivi. Il comportamento in caso di registrazione/rimozione di layer durante l'iterazione è da definire separatamente.

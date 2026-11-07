@@ -309,3 +309,7 @@ Decisione confermata: durante lo Y-sort, i valori di profondità non finiti (`Na
 
 ### API 73 — Profondità Y negative valide e ordinamento crescente
 Decisione confermata: le profondità Y **negative e finite** sono perfettamente valide; lo Y-sort ordina per valore numerico **crescente naturale**, per esempio `-100, -20, 0, 50, 200`. Non applicare clamp/normalizzazione a zero né introdurre un'opzione per gestire i valori negativi. L'API 72 applica fallback solo ai valori **non finiti** (`NaN`, `Infinity`, `-Infinity`), non ai valori negativi finiti. Restano valide la stabilità in caso di parità (API 69) e l'esclusione di `zIndex` come criterio (API 71).
+
+
+### API 74 — Verifica ordine prima di modificare il Container
+Decisione confermata: a **ogni frame** del ticker (API 64, 68), per ciascun layer con `sortMode: "y"`, Rpgoria **verifica se i figli diretti sono già ordinati** per profondità effettiva crescente. Se lo sono, **non modifica** l'ordine/gerarchia del Container e non esegue riordinamenti superflui; se non lo sono, riordina. In caso di profondità uguali preserva l'ordine relativo precedente (sort stabile, API 69). Il controllo deve considerare valori espliciti di profondità, fallback per valori non finiti (API 72), valori negativi validi (API 73), figli invisibili (API 70), e ignorare `zIndex` (API 71). Non è richiesta una cache delle profondità tra frame; l'obiettivo è evitare mutazioni del Container quando l'ordine è già corretto.

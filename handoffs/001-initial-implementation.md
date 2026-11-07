@@ -297,3 +297,7 @@ Decisione confermata: per tutti i layer con `sortMode: "y"`, quando due oggetti 
 
 ### API 70 — Y-sort include gli oggetti nascosti
 Decisione confermata: tutti i figli diretti di un layer con `sortMode: "y"` partecipano all'ordinamento **anche quando `visible === false`**. La visibilità non altera il valore di profondità né esclude l'oggetto dal sort; quando torna visibile, è già ordinato correttamente. Non introdurre opzioni di inclusione/esclusione per visibilità. Resta stabile l'ordinamento a parità di profondità (API 69), con aggiornamento a ogni frame del ticker in modalità auto (API 64, 68) e soli figli diretti (API 62–63).
+
+
+### API 71 — Y-sort Rpgoria prioritario rispetto a PixiJS zIndex
+Decisione confermata: nei layer con `sortMode: "y"`, l'ordine visivo dei figli diretti è determinato **esclusivamente dall'ordinamento per profondità Y effettiva di Rpgoria** (con le precedenze esplicite già definite), non da `DisplayObject.zIndex` di PixiJS. `zIndex` non è né criterio primario, né secondario, né sostituto della profondità Y. L'implementazione deve impedire che un eventuale ordinamento automatico di PixiJS basato su `zIndex` sovrascriva il risultato di Rpgoria, usando le API pubbliche effettivamente supportate dalla versione PixiJS adottata. Rimangono l'ordinamento stabile a parità di profondità (API 69), l'inclusione dei figli invisibili (API 70) e il vincolo dei soli figli diretti (API 62–63). Documentare la precedenza nella wiki.

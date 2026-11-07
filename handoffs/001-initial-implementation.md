@@ -217,3 +217,7 @@ Decisione confermata: quando il developer registra/configura un **layer destinat
 
 ### API 50 — Firma di onCharacterRemove: ID personaggio e oggetto layer
 Decisione confermata dall'utente: l'handler obbligatorio `onCharacterRemove` del layer personaggi riceve **`characterId` e l'oggetto effettivo del layer** (`onCharacterRemove(characterId, layer)`), NON l'elemento `CharacterMapStoredClass` e NON il solo `layerId`. Il developer usa il layer e l'ID per trovare e staccare la rappresentazione grafica del personaggio. La tipizzazione esatta dell'oggetto layer va allineata alle API PixiJS/Rpgoria già definite; non assumere che sia una stringa. La gestione/distruzione della view rimane responsabilità del developer. La firma è sincrona o asincrona secondo una decisione successiva.
+
+
+### API 51 — Handler di rimozione strettamente sincrono
+Decisione confermata: `onCharacterRemove(characterId, layer): void` è **solo sincrono**. La rimozione della view dal layer deve avvenire durante la chiamata; Rpgoria non attende Promise o animazioni. `removeFromMap()` non deve attendere operazioni asincrone per completare la rimozione grafica. Eventuali effetti/animazioni di scomparsa sono orchestrati separatamente dal developer. Restano valide API 48–50: `removeFromMap` interrompe movimento, invoca handler del layer, deregistra e cancella lo stato persistente.

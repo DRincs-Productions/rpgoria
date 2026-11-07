@@ -329,3 +329,7 @@ Decisione confermata: per ciascun layer con `sortMode: "y"`, **all'inizio della 
 
 ### API 78 — Profondità effettive acquisite una sola volta per singolo Y-sort
 Decisione confermata: all'inizio di ogni singola operazione Y-sort di un layer, Rpgoria (1) acquisisce lo **snapshot dei figli diretti** secondo API 77 e (2) **calcola una sola volta** la profondità effettiva di ciascun figlio nello snapshot, rispettando le priorità esplicite, il fallback per valori non finiti (API 72) e le profondità negative valide (API 73). Per tutta la durata di quel sort usa esclusivamente i valori acquisiti, **senza rileggere le profondità durante i confronti**. Cambiamenti di profondità successivi allo snapshot sono considerati nel **frame successivo**, senza secondo sort nello stesso frame. Rimane obbligatorio verificare l'appartenenza al Container prima di riordinare un oggetto (API 77), preservare la stabilità a parità di profondità (API 69) ed evitare mutazioni se già ordinato (API 74).
+
+
+### API 79 — Ordine di esecuzione dello Y-sort tra layer
+Decisione confermata: quando più layer hanno `sortMode: "y"`, Rpgoria esegue il rispettivo Y-sort **nell'ordine di registrazione dei layer**. Ciascun layer è ordinato indipendentemente con il proprio snapshot dei figli e delle profondità (API 77–78). L'ordine di esecuzione non dipende dalla posizione corrente dei layer in `rpgoria.layers.container`, né modifica l'ordine di rendering/composizione dei layer scelto dal developer. Mantenere l'ordine di registrazione deterministico.

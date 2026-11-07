@@ -161,3 +161,7 @@ Dopo un teletrasporto riuscito Rpgoria richiama immediatamente `onVisualUpdate(s
 
 ### API 37 — Sincronizzazione visiva dopo teletrasporto
 Dopo un teletrasporto riuscito, Rpgoria invoca immediatamente `onVisualUpdate(state)` con posizione finale non interpolata, `velocityX=0`, `velocityY=0`, `speed=0`, `isMoving=false`, `movementId=null`. Facing/rotation/angle vengono aggiornati se il teletrasporto specifica un orientamento, altrimenti persistono. Nessun hook `onTeleported()` obbligatorio nella classe base. L'evento pubblico `teleported` resta disponibile per effetti e logica di gioco.
+
+
+### API 38 — Gestione errori di onVisualUpdate (decisione aperta)
+Pixi'VN dispone di `Game.addOnError()` (documentazione: https://jsdocs.pixi-vn.com/pixi-vn/index/namespaces/Game/functions/addOnError), per registrare handler di errore. La registrazione degli handler NON implica che questa funzione possa essere usata da un modulo esterno per emettere errori. Prima dell'implementazione, Codex deve ispezionare il sorgente Pixi'VN e verificare se esiste un punto di ingresso pubblico/supportato per inoltrare errori al sistema centrale. Preferire il sistema di error handling di Pixi'VN, evitando duplicazioni; non introdurre `handlerError` in Rpgoria per gli errori di `onVisualUpdate()` senza ulteriore decisione. API 38 ancora aperta: valutare come isolare gli errori di callback visuale senza compromettere movimento/collisioni, compatibilmente con l'API pubblica Pixi'VN.

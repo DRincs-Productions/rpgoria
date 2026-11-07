@@ -62,7 +62,7 @@ const current = rpgoria.characters.current;
 - Parametri temporali/velocità attraverso `MovementModel` compatibile Motion.js, non vecchi valori numerici hardcoded. Motion.js easing/spring/keyframes per interpolazione ma senza overshoot fisico o violazione collisioni.
 - `moveTo`: pathfinding, nearest reachable come fallback (`reached_nearest`), ripianificazione per ostacoli dinamici, attesa massima 3s prima del fallback, nuovo comando sostituisce precedente, tolleranza arrivo free 1px.
 ```ts
-type MoveToCancelReason = "explicit"|"replaced"|"manual_input"|"teleport";
+type MoveToCancelReason = "explicit" | "replaced" | "manual_input" | "teleport" | "unregistered";
 type MoveToResult =
   | { status: "reached" }
   | { status: "reached_nearest" }
@@ -181,3 +181,7 @@ Se `onVisualUpdate()` genera un errore, Rpgoria lo intercetta senza interrompere
 
 ### API 42 — Rimozione dal registro e ownership della view
 Decisione confermata: `RegisteredCharacterMapElements.remove(...)` mantiene firma/semantica del registro Pixi'VN (da verificare nel sorgente), ma la rimozione interrompe ogni successiva invocazione di `onVisualUpdate()` sull'elemento rimosso. Rpgoria non rimuove né distrugge automaticamente Sprite, Container, Spine, modelli 3D o altre risorse grafiche: gestione e cleanup della view rimangono esclusivamente al developer. Non introdurre `onRemoved()` nella classe base per questa finalità. Garantire che eventuali update già pianificati non richiamino un elemento deregistrato.
+
+
+### API 43 — Deregistrazione durante il movimento
+Decisione confermata: quando `RegisteredCharacterMapElements.remove(...)` deregistra un personaggio, Rpgoria annulla **immediatamente** qualunque movimento in corso, anche un passo grid non ancora completato, libera le prenotazioni di celle e rimuove il personaggio dalle collisioni. Ogni `moveTo()` pendente si risolve con `{ status: "cancelled", reason: "unregistered" }`. Aggiungere `"unregistered"` a `MoveToCancelReason`. Non invocare più `onVisualUpdate()` dopo la deregistrazione; nessun cleanup della view, che rimane del developer (API 42). Gestire in modo deterministico il caso di deregistrazione durante un callback/tick, evitando aggiornamenti successivi sul personaggio e risorse collisione residue. Precisare la precedenza del motivo `unregistered` rispetto a cancellazioni già avviate nella definizione finale della state machine.

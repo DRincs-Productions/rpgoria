@@ -269,3 +269,7 @@ Decisione confermata: **qualsiasi** layer con `sortMode: "y"`, indipendentemente
 
 ### API 63 — Y-sort solo dei figli diretti, senza correzioni o errori
 Decisione confermata: per tutti i layer con `sortMode: "y"`, Rpgoria **ordina soltanto i figli diretti** del Container condiviso del layer. Non attraversa Container annidati per trovare oggetti ordinabili, non genera errori se il developer usa una struttura diversa e non sposta/riparenta automaticamente gli oggetti. Un Container figlio diretto può contenere la gerarchia grafica interna di un personaggio/oggetto ed è ordinato come **una sola unità**. La responsabilità della corretta struttura è del developer e la wiki deve documentarla chiaramente con esempi. Estende API 61–62.
+
+
+### API 64 — Y-sort a ogni frame del ticker attivo
+Decisione confermata: per ogni layer con `sortMode: "y"`, Rpgoria esegue l'ordinamento **a ogni frame in cui il ticker condiviso è attivo**, anche quando nessun personaggio sta compiendo un movimento gestito da Rpgoria. Questo include oggetti spostati/animati direttamente dal developer. Non implica che il ticker debba restare sempre acceso: rispettare il ciclo di vita già deciso (ticker attivo quando richiesto da movimenti o sortable dinamici; modalità manuale secondo configurazione). Ordinare soltanto i figli diretti del Container del layer (API 62–63), usando la priorità di profondità esplicita già stabilita e la `y` locale come fallback. Il comportamento quando il ticker è inattivo e la possibilità di un ordinamento esplicito restano da precisare.

@@ -305,3 +305,7 @@ Decisione confermata: nei layer con `sortMode: "y"`, l'ordine visivo dei figli d
 
 ### API 72 — Fallback per profondità Y non finita
 Decisione confermata: durante lo Y-sort, i valori di profondità non finiti (`NaN`, `Infinity`, `-Infinity`) non devono compromettere l'ordinamento. Rispettando la precedenza delle fonti di profondità già stabilita, utilizzare una profondità esplicita soltanto se `Number.isFinite(value)`; altrimenti provare la `y` locale del figlio diretto se finita; se anch'essa non è finita, usare `0` come fallback deterministico. Nessun errore di configurazione per questo caso. Rimane l'ordinamento stabile in caso di parità (API 69), anche per oggetti invisibili (API 70); `zIndex` non partecipa (API 71).
+
+
+### API 73 — Profondità Y negative valide e ordinamento crescente
+Decisione confermata: le profondità Y **negative e finite** sono perfettamente valide; lo Y-sort ordina per valore numerico **crescente naturale**, per esempio `-100, -20, 0, 50, 200`. Non applicare clamp/normalizzazione a zero né introdurre un'opzione per gestire i valori negativi. L'API 72 applica fallback solo ai valori **non finiti** (`NaN`, `Infinity`, `-Infinity`), non ai valori negativi finiti. Restano valide la stabilità in caso di parità (API 69) e l'esclusione di `zIndex` come criterio (API 71).

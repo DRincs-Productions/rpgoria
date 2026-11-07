@@ -165,3 +165,7 @@ Dopo un teletrasporto riuscito, Rpgoria invoca immediatamente `onVisualUpdate(st
 
 ### API 38 — Gestione errori di onVisualUpdate (decisione aperta)
 Pixi'VN dispone di `Game.addOnError()` (documentazione: https://jsdocs.pixi-vn.com/pixi-vn/index/namespaces/Game/functions/addOnError), per registrare handler di errore. La registrazione degli handler NON implica che questa funzione possa essere usata da un modulo esterno per emettere errori. Prima dell'implementazione, Codex deve ispezionare il sorgente Pixi'VN e verificare se esiste un punto di ingresso pubblico/supportato per inoltrare errori al sistema centrale. Preferire il sistema di error handling di Pixi'VN, evitando duplicazioni; non introdurre `handlerError` in Rpgoria per gli errori di `onVisualUpdate()` senza ulteriore decisione. API 38 ancora aperta: valutare come isolare gli errori di callback visuale senza compromettere movimento/collisioni, compatibilmente con l'API pubblica Pixi'VN.
+
+
+### API 39 — Contesto strutturato degli errori visuali
+Decisione confermata: gli errori di `onVisualUpdate()` devono preservare `characterId`, `operation: "onVisualUpdate"` e `cause` (errore originale), per diagnosi e correlazione al personaggio. Integrarli con il sistema di error handling Pixi'VN solo se il sorgente conferma un punto di ingresso pubblico supportato; non inventare API di emissione. Non creare un sistema di error handling parallelo. L'API 38 (isolamento e comportamento in caso di errore) resta aperta.

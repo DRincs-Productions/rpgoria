@@ -265,3 +265,7 @@ Decisione dell'utente: le rappresentazioni dei personaggi in uno stesso layer de
 
 ### API 62 — Container condiviso obbligatorio per ogni layer Y-sort
 Decisione confermata: **qualsiasi** layer con `sortMode: "y"`, indipendentemente dal `type`, richiede che **tutti gli oggetti ordinabili siano figli diretti del Container condiviso di quel layer**. Il fallback automatico di profondità usa la coordinata `y` locale del nodo principale, senza calcoli di trasformazioni attraverso gerarchie esterne. Un nodo ordinabile può essere un Container con figli annidati: è ordinato come singola unità. Rimane valida la priorità dei valori espliciti di profondità già decisa. La wiki deve spiegare la convenzione per layer personaggi e non, con esempi corretti/errati e indicazioni sul punto base/ancoraggio. Questa decisione estende e chiarisce API 61, senza limitare `sortMode: "y"` ai layer `characters` (API 60).
+
+
+### API 63 — Y-sort solo dei figli diretti, senza correzioni o errori
+Decisione confermata: per tutti i layer con `sortMode: "y"`, Rpgoria **ordina soltanto i figli diretti** del Container condiviso del layer. Non attraversa Container annidati per trovare oggetti ordinabili, non genera errori se il developer usa una struttura diversa e non sposta/riparenta automaticamente gli oggetti. Un Container figlio diretto può contenere la gerarchia grafica interna di un personaggio/oggetto ed è ordinato come **una sola unità**. La responsabilità della corretta struttura è del developer e la wiki deve documentarla chiaramente con esempi. Estende API 61–62.

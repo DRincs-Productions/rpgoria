@@ -245,3 +245,7 @@ Decisione confermata: `rpgoria.characters.removeFromMap(characterId)` è **idemp
 
 ### API 57 — removeFromMap su personaggio deregistrato ma con stato persistente
 Decisione confermata: se `rpgoria.characters.removeFromMap(characterId)` è chiamato quando il personaggio **non è registrato** in `RegisteredCharacterMapElements`, ma esiste ancora stato spaziale persistente per quell'ID, cancella **soltanto** posizione/orientamento salvati tramite l'utility interna e **non invoca** gli handler `onCharacterRemove` dei layer, né modifica view/layer/collisioni. Se invece è registrato, esegue la rimozione completa con handler (API 48–55). Se non è registrato e non esiste stato, è no-op idempotente (API 56). Queste tre condizioni definiscono il branching pubblico di `removeFromMap`.
+
+
+### API 58 — Firma pubblica sincrona di removeFromMap
+Decisione confermata: `rpgoria.characters.removeFromMap(characterId): void` è **sincrona**, senza Promise né valore di ritorno. Quando il metodo ritorna, Rpgoria ha eseguito gli handler `onCharacterRemove` applicabili (API 49–55), annullato immediatamente i movimenti, liberato le collisioni, deregistrato il personaggio se presente e cancellato il relativo stato spaziale persistente (API 48, 57). Rimane idempotente quando non esistono né registrazione né stato (API 56). Gli errori degli handler grafici sono isolati (API 52), senza compromettere la pulizia logica. Non esporre `clearState()` come API pubblica (revisione API 48).

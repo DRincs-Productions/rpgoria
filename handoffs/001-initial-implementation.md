@@ -241,3 +241,7 @@ Decisione confermata: all'inizio di `rpgoria.characters.removeFromMap(characterI
 
 ### API 56 — Idempotenza di removeFromMap
 Decisione confermata: `rpgoria.characters.removeFromMap(characterId)` è **idempotente** quando il personaggio è già stato rimosso e non esiste più stato spaziale persistente per il suo `characterId`: termina normalmente, senza invocare di nuovo alcun `onCharacterRemove`, senza modificare layer/collisioni e senza generare errori per l'assenza. La prima rimozione esegue la sequenza completa delle API 48–55. Il caso distinto di personaggio non registrato ma con stato persistente ancora presente richiede una decisione esplicita successiva.
+
+
+### API 57 — removeFromMap su personaggio deregistrato ma con stato persistente
+Decisione confermata: se `rpgoria.characters.removeFromMap(characterId)` è chiamato quando il personaggio **non è registrato** in `RegisteredCharacterMapElements`, ma esiste ancora stato spaziale persistente per quell'ID, cancella **soltanto** posizione/orientamento salvati tramite l'utility interna e **non invoca** gli handler `onCharacterRemove` dei layer, né modifica view/layer/collisioni. Se invece è registrato, esegue la rimozione completa con handler (API 48–55). Se non è registrato e non esiste stato, è no-op idempotente (API 56). Queste tre condizioni definiscono il branching pubblico di `removeFromMap`.

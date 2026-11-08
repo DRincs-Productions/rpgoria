@@ -349,3 +349,7 @@ Decisione confermata: lo **stesso oggetto layer PixiJS** può avere **una sola r
 
 ### API 83 — Deregistrazione layer esclusivamente logica
 Decisione confermata: la deregistrazione di un layer rimuove **solo la registrazione logica** in Rpgoria e interrompe la gestione del layer (incluso il suo Y-sort); **non** rimuove o riposiziona il Container PixiJS del layer in `rpgoria.layers.container` o altrove nella gerarchia, **non** distrugge il layer e **non** distrugge né modifica i suoi figli. Il developer resta responsabile della gestione della scena PixiJS. È consentito registrare nuovamente lo stesso oggetto layer dopo la deregistrazione, con nuova identità (API 81); una seconda registrazione mentre è ancora attivo resta un errore (API 82).
+
+
+### API 84 — Deregistrazione di layer inesistente idempotente
+Decisione confermata: tentare di deregistrare un layer **mai registrato** o **già deregistrato** è un **no-op senza errori**. Non modifica alcuno stato, né la gerarchia o gli oggetti PixiJS. La deregistrazione ripetuta è sicura. Quando invece esiste una registrazione attiva, si applica la sola rimozione logica stabilita dall'API 83; non è richiesta una segnalazione di errore per registrazione assente.

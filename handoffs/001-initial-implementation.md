@@ -353,3 +353,7 @@ Decisione confermata: la deregistrazione di un layer rimuove **solo la registraz
 
 ### API 84 — Deregistrazione di layer inesistente idempotente
 Decisione confermata: tentare di deregistrare un layer **mai registrato** o **già deregistrato** è un **no-op senza errori**. Non modifica alcuno stato, né la gerarchia o gli oggetti PixiJS. La deregistrazione ripetuta è sicura. Quando invece esiste una registrazione attiva, si applica la sola rimozione logica stabilita dall'API 83; non è richiesta una segnalazione di errore per registrazione assente.
+
+
+### API 85 — Deregistrazione tramite ID stringa univoco
+Decisione confermata: ogni layer registrato in Rpgoria deve avere un **ID pubblico di tipo stringa univoco tra le registrazioni attive**. L'API pubblica di deregistrazione accetta **l'ID stringa**, non il riferimento all'oggetto layer PixiJS. Due layer attivi non possono condividere lo stesso ID. Deregistrare un ID non presente nel registro è un **no-op senza errori** (API 84); la deregistrazione rimane esclusivamente logica, senza modificare la gerarchia PixiJS o distruggere oggetti (API 83). L'ID pubblico del layer è distinto dall'**identità interna della specifica registrazione** usata per validare gli snapshot Y-sort (API 81): anche riutilizzando un ID dopo deregistrazione, la nuova registrazione deve avere nuova identità interna. Resta vietata una doppia registrazione attiva dello stesso oggetto layer (API 82).

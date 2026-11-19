@@ -633,3 +633,13 @@ Decisione confermata (opzione C): l'ordine di esecuzione degli eventi marcati co
 
 ### API 148 — Salto temporale all'indietro: routine ferme fino al recupero del tempo già elaborato
 Decisione confermata (opzione C): se il tempo di gioco NQTR **torna indietro**, le routine **non vengono riavvolte** e mantengono lo stato raggiunto all'**ultimo istante temporale elaborato**. Non annullare movimenti, attività o effetti collaterali già prodotti e non rieseguire retroattivamente attività/eventi dell'intervallo ripetuto. Le routine riprendono ad avanzare soltanto quando il tempo NQTR **raggiunge nuovamente** l'ultimo istante elaborato, proseguendo da lì quando lo supera. Conservare un riferimento logico all'ultimo tempo elaborato; dettagli di gestione per-NPC/globale da chiarire se necessari. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 149 — Eventi recuperabili eseguiti una sola volta per intervallo/occorrenza
+Decisione confermata (opzione A): Rpgoria **registra quali eventi recuperabili sono già stati eseguiti** durante la ricostruzione temporale. Se lo stesso intervallo di tempo viene elaborato di nuovo, **non riesegue** gli eventi già recuperati. La granularità/identità dell'occorrenza va definita coerentemente con eventi ricorrenti e salti temporali; non dedurre che lo stesso tipo di evento non possa mai ricorrere in date diverse.
+
+### API 150 — Tracciamento persistente attraverso Pixi'VN
+Decisione confermata (opzione A): il tracciamento degli eventi recuperati (API 149) deve utilizzare i **meccanismi esistenti di persistenza di Pixi'VN**, senza introdurre un sistema di salvataggio parallelo in Rpgoria. Verificare l'effettiva API di persistenza Pixi'VN durante l'implementazione e integrarsi con essa.
+
+### API 151 — Errori di recupero isolati, ricostruzione continua
+Decisione confermata (opzione A): se il callback di un evento recuperabile fallisce, **segnalare l'errore tramite il sistema previsto** (preferendo le infrastrutture Pixi'VN se disponibili) e **continuare** a ricostruire le altre attività e ad eseguire gli altri eventi recuperabili; nessun blocco globale né retry automatico come conseguenza implicita. **Questione aperta:** un evento fallito conta come già recuperato ai fini della deduplicazione API 149 oppure rimane da eseguire? Da decidere separatamente. Nessuna modifica al codice sorgente autorizzata.

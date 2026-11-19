@@ -623,3 +623,13 @@ Decisione confermata (opzione A): quando il tempo di gioco salta avanti di molte
 
 ### API 145 — Eventi intermedi recuperabili soltanto con opt-in esplicito
 Decisione confermata (opzione A): nella ricostruzione delle attività attraversate durante un salto temporale, eseguire **gli effetti collaterali degli eventi intermedi solo se il developer li ha esplicitamente dichiarati recuperabili**. Gli eventi non marcati non vengono riprodotti retroattivamente (es. non avviare dialoghi/interazioni scaduti). Il contratto concreto per marcare un evento come recuperabile è ancora da definire; non inventare subito una firma API. Coordinare con la ricostruzione API 144 e la gestione errori/callback già concordata. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 146 — Proprietà opzionale sugli eventi per recupero dopo salto temporale
+Decisione confermata (opzione A): un evento può dichiarare direttamente, tramite **proprietà opzionale** (ad esempio `catchUp: true`), di essere **recuperabile** durante la ricostruzione delle attività attraversate in un salto temporale (API 144–145). In assenza dell'indicazione esplicita, non eseguire retroattivamente i suoi effetti collaterali. Il nome `catchUp` è **esemplificativo**, non ancora vincolante come firma finale: verificare la struttura effettiva degli eventi NQTR prima dell'implementazione; evitare registri paralleli non necessari.
+
+### API 147 — Nessuna garanzia pubblica sull'ordine degli eventi recuperabili
+Decisione confermata (opzione C): l'ordine di esecuzione degli eventi marcati come recuperabili durante un salto temporale **non fa parte del contratto pubblico**. Non garantire ordine cronologico, per NPC o tra NPC; il developer non deve fare affidamento sull'ordine dei callback per ottenere risultati corretti. Le implementazioni possono scegliere un ordine interno, senza renderlo una garanzia API.
+
+### API 148 — Salto temporale all'indietro: routine ferme fino al recupero del tempo già elaborato
+Decisione confermata (opzione C): se il tempo di gioco NQTR **torna indietro**, le routine **non vengono riavvolte** e mantengono lo stato raggiunto all'**ultimo istante temporale elaborato**. Non annullare movimenti, attività o effetti collaterali già prodotti e non rieseguire retroattivamente attività/eventi dell'intervallo ripetuto. Le routine riprendono ad avanzare soltanto quando il tempo NQTR **raggiunge nuovamente** l'ultimo istante elaborato, proseguendo da lì quando lo supera. Conservare un riferimento logico all'ultimo tempo elaborato; dettagli di gestione per-NPC/globale da chiarire se necessari. Nessuna modifica al codice sorgente autorizzata.

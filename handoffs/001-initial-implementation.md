@@ -603,3 +603,13 @@ Decisione confermata (opzione A): mentre la Room non è visualizzata, gli NPC **
 
 ### API 139 — All'ingresso nella Room correggere posizioni non valide con punto valido più vicino
 Decisione confermata (opzione A): quando una Room torna visibile, se la posizione logica calcolata per un NPC fuori scena **non è percorribile/valida**, Rpgoria cerca la **posizione valida più vicina** e colloca lì l'NPC prima di mostrarlo, evitando spawn dentro ostacoli. La scelta del punto valido deve rispettare la rappresentazione della mappa e le regole di occupazione pertinenti. Il comportamento se **non esiste alcuna posizione valida** rimane da decidere in API successiva. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 140 — Nessuna posizione valida: NPC non visualizzato, stato conservato
+Decisione confermata (opzione A): se, all'attivazione/visualizzazione di una Room, non è possibile trovare **alcuna posizione valida** in cui collocare un NPC (dopo il tentativo di correzione al punto valido più vicino dell'API 139), **non visualizzare l'NPC**. Conservare integralmente il suo stato logico e la routine; potrà essere mostrato quando sarà possibile collocarlo validamente. Non forzare uno spawn dentro ostacoli né eliminare il personaggio.
+
+### API 141 — Simulazione fuori scena event-driven e lazy, senza ticker logico continuo
+Decisione confermata (opzione A): per gli NPC in **Room non visualizzate**, calcolare/aggiornare la progressione temporale semplificata **quando serve**, per esempio a cambi di attività NQTR, eventi, richieste dello stato o ingresso del protagonista nella Room. **Non richiedere un ticker logico continuo per ogni NPC fuori scena**. Al momento dell'aggiornamento, recuperare coerentemente il tempo trascorso per rispettare API 134 e 137–138. Non applicare questa ottimizzazione agli NPC semplicemente fuori camera nella Room corrente (API 121).
+
+### API 142 — Trigger personalizzati operativi immediatamente in qualsiasi Room
+Decisione confermata (opzione A): il developer può invocare trigger/comandi personalizzati che **interrompono o modificano il comportamento logico di un NPC in qualsiasi Room**, anche quando la Room non è visualizzata. Il comando viene **preso in carico immediatamente**, senza attendere l'ingresso del protagonista nella Room; la progressione/posizione coerente con il tempo trascorso può essere calcolata in tale occasione secondo API 141. Non introdurre un framework obbligatorio di trigger (API 122). Distinguere l'effetto logico immediato dalla rappresentazione grafica, che può essere assente. Nessuna modifica al codice sorgente autorizzata.

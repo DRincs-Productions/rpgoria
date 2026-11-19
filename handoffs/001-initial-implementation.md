@@ -593,3 +593,13 @@ Decisione confermata (opzione A): quando il protagonista entra in una Room prece
 
 ### API 136 — Routine indipendenti senza collisioni dettagliate nelle Room non visualizzate
 Decisione confermata (opzione A): ciascun NPC continua la propria attività/routine in una Room non visualizzata in maniera **indipendente**; **non simulare dettagliatamente le collisioni tra NPC fuori scena**. All'ingresso del protagonista nella Room si deve ottenere uno stato coerente e riprendere il normale funzionamento della Room visualizzata, secondo API 134–135. Questa semplificazione non elimina le regole di collisione della Room visualizzata né modifica API 121. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 137 — Posizione fuori scena basata su tempo, velocità e destinazioni
+Decisione confermata (opzione A): nelle Room non visualizzate, **calcolare la progressione delle routine e la posizione logica degli NPC in funzione del tempo trascorso, delle velocità e delle destinazioni**. Non animare i singoli passi né richiedere ticker grafici per il progresso fuori scena; mantenere stato/posizione coerenti con API 134–136. Non ridurre il comportamento a teletrasporti immediati tra destinazioni basati soltanto sugli orari NQTR.
+
+### API 138 — Cambi di attività NQTR automatici anche fuori scena
+Decisione confermata (opzione A): mentre la Room non è visualizzata, gli NPC **passano automaticamente all'attività prevista dalla routine NQTR** quando la pianificazione cambia, senza aspettare che il protagonista entri nella Room e senza richiedere `rpgoria.routine.refresh()` manuale per tali normali transizioni programmate. Distinguere questa progressione naturale delle routine dal `refresh()` esplicito che riallinea e invalida obiettivi sospesi (API 130).
+
+### API 139 — All'ingresso nella Room correggere posizioni non valide con punto valido più vicino
+Decisione confermata (opzione A): quando una Room torna visibile, se la posizione logica calcolata per un NPC fuori scena **non è percorribile/valida**, Rpgoria cerca la **posizione valida più vicina** e colloca lì l'NPC prima di mostrarlo, evitando spawn dentro ostacoli. La scelta del punto valido deve rispettare la rappresentazione della mappa e le regole di occupazione pertinenti. Il comportamento se **non esiste alcuna posizione valida** rimane da decidere in API successiva. Nessuna modifica al codice sorgente autorizzata.

@@ -11,3 +11,12 @@
 - [ ] **Movimento casuale naturale** (API 122): esplorazione/wandering credibile, con scelta di destinazioni, pause e cambi di direzione non meccanici, compatibile con griglia e movimento libero.
 
 Questi comportamenti sono idee per implementazioni successive, non API confermate né funzionalità da realizzare subito.
+
+## Strategie future configurabili per destinazioni irraggiungibili (API 128)
+
+- [ ] **Impostazione del comportamento in caso di percorso impossibile**: permettere al developer di scegliere una strategia, mantenendo per la prima implementazione la fermata nella posizione attuale nel caso di `rpgoria.routine.continue(id)` impossibile.
+- [ ] **Punto accessibile più vicino**: raggiungere la posizione percorribile più vicina alla destinazione irraggiungibile e fermarsi.
+- [ ] **Ricerca naturale di una via d'uscita**: raggiungere un punto accessibile e muoversi lungo il perimetro degli ostacoli come se l'NPC cercasse un passaggio, con limiti per evitare loop infiniti.
+- [ ] **Teletrasporto solo fuori camera**: dirigersi verso un punto accessibile vicino alla destinazione o scelto casualmente e, quando l'NPC è fuori dal campo visivo del giocatore, teletrasportarlo secondo regole da definire. Evitare teletrasporti osservabili dal giocatore.
+
+Le strategie sono idee future: definire configurazione, ambito, collisioni, sicurezza e compatibilità con routine e mappe prima di implementarle.

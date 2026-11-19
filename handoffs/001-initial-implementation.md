@@ -613,3 +613,13 @@ Decisione confermata (opzione A): per gli NPC in **Room non visualizzate**, calc
 
 ### API 142 — Trigger personalizzati operativi immediatamente in qualsiasi Room
 Decisione confermata (opzione A): il developer può invocare trigger/comandi personalizzati che **interrompono o modificano il comportamento logico di un NPC in qualsiasi Room**, anche quando la Room non è visualizzata. Il comando viene **preso in carico immediatamente**, senza attendere l'ingresso del protagonista nella Room; la progressione/posizione coerente con il tempo trascorso può essere calcolata in tale occasione secondo API 141. Non introdurre un framework obbligatorio di trigger (API 122). Distinguere l'effetto logico immediato dalla rappresentazione grafica, che può essere assente. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 143 — Tempo di gioco NQTR come sorgente temporale delle routine
+Decisione confermata (opzione A): l'avanzamento delle routine NPC segue **il tempo del mondo di gioco gestito da NQTR**, non il tempo reale/wall-clock. Accelerazioni, modifiche e salti dell'orologio di gioco si riflettono nella progressione delle routine. Per le Room non visualizzate, usare tale tempo anche per il calcolo lazy/event-driven dell'avanzamento (API 137 e 141). Non introdurre una sorgente temporale Rpgoria separata come requisito.
+
+### API 144 — Salti temporali: ricostruire attività attraversate e stato finale
+Decisione confermata (opzione A): quando il tempo di gioco salta avanti di molte ore, Rpgoria **ricostruisce le attività attraversate** e determina lo **stato finale coerente** degli NPC, senza riprodurre tutte le animazioni o simulare ogni singolo movimento intermedio. Non limitarsi a ignorare indiscriminatamente le attività intermedie: la loro ricostruzione può essere rilevante per lo stato e per gli eventi recuperabili (API 145). Dettagli algoritmici e limiti di ricostruzione da definire.
+
+### API 145 — Eventi intermedi recuperabili soltanto con opt-in esplicito
+Decisione confermata (opzione A): nella ricostruzione delle attività attraversate durante un salto temporale, eseguire **gli effetti collaterali degli eventi intermedi solo se il developer li ha esplicitamente dichiarati recuperabili**. Gli eventi non marcati non vengono riprodotti retroattivamente (es. non avviare dialoghi/interazioni scaduti). Il contratto concreto per marcare un evento come recuperabile è ancora da definire; non inventare subito una firma API. Coordinare con la ricostruzione API 144 e la gestione errori/callback già concordata. Nessuna modifica al codice sorgente autorizzata.

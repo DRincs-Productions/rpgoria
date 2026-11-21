@@ -643,3 +643,13 @@ Decisione confermata (opzione A): il tracciamento degli eventi recuperati (API 1
 
 ### API 151 — Errori di recupero isolati, ricostruzione continua
 Decisione confermata (opzione A): se il callback di un evento recuperabile fallisce, **segnalare l'errore tramite il sistema previsto** (preferendo le infrastrutture Pixi'VN se disponibili) e **continuare** a ricostruire le altre attività e ad eseguire gli altri eventi recuperabili; nessun blocco globale né retry automatico come conseguenza implicita. **Questione aperta:** un evento fallito conta come già recuperato ai fini della deduplicazione API 149 oppure rimane da eseguire? Da decidere separatamente. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 152 — Evento recuperabile fallito considerato elaborato
+Decisione confermata (opzione A): se un evento marcato come recuperabile genera un errore durante la ricostruzione temporale, **registrare comunque la sua occorrenza come elaborata**. Segnalare e isolare l'errore secondo API 151, continuando la ricostruzione, ma **non ritentare automaticamente** quell'occorrenza nelle elaborazioni successive dello stesso intervallo. Motivazione: evitare duplicazioni di effetti collaterali già eseguiti parzialmente.
+
+### API 153 — Deduplicazione delle occorrenze tramite identità evento + istante NQTR
+Decisione confermata (opzione A): identificare ogni occorrenza recuperabile tramite la combinazione di **identità dell'evento** e **istante temporale NQTR**. Lo stesso evento può ricorrere ed essere recuperato in giorni/istanti diversi, mentre una specifica occorrenza non viene eseguita due volte (API 149), anche se fallisce (API 152). Il modo concreto di rappresentare l'identità stabile degli eventi e gli istanti NQTR va verificato con le API effettive.
+
+### API 154 — Ripristino salvataggio senza catch-up implicito
+Decisione confermata (opzione A): quando viene caricato un salvataggio, Rpgoria **ripristina lo stato persistente delle routine e il tracciamento degli eventi recuperati tramite i meccanismi di Pixi'VN** (API 150), **senza considerare il caricamento un nuovo salto temporale** e senza rieseguire gli eventi recuperabili. Rispettare gli istanti già elaborati e le occorrenze registrate; la normale progressione successiva segue il tempo NQTR. Nessuna modifica al codice sorgente autorizzata.

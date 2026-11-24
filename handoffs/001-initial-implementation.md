@@ -699,3 +699,13 @@ Decisione confermata (opzione A): se un NPC **non ha una posizione di partenza v
 
 ### API 167 — Ricomparsa: preservare ultimo orientamento
 Decisione confermata (opzione A): quando un NPC ricompare tramite teletrasporto dopo un periodo senza presenza spaziale, **mantiene l'ultimo orientamento/facing noto**. Il solo teletrasporto di ricomparsa **non cambia automaticamente** la direzione verso cui guarda. Successivi movimenti o comandi espliciti possono modificarla secondo le regole già concordate. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 168 — NPC assente continua a seguire le attività NQTR
+Decisione confermata (opzione A): anche quando un NPC è **spazialmente assente** (API 158–165), Rpgoria **continua a seguire le attività NQTR** del personaggio, senza sospendere la routine né richiedere `rpgoria.routine.refresh()` per il normale avanzamento. Quando una successiva attività assegna una **Room e una posizione valide**, l'NPC **ricompare automaticamente** secondo API 160, 163, 165 e 167. L'avanzamento delle attività resta vincolato ai cambiamenti del tempo NQTR (API 156), non a un orologio continuo Rpgoria.
+
+### API 169 — Teletrasporto esplicito può far ricomparire un NPC assente
+Decisione confermata (opzione A): il developer può assegnare direttamente a un NPC spazialmente assente una **Room e una posizione valide** tramite comando esplicito di teletrasporto, **senza aspettare una nuova attività NQTR**. Il personaggio riacquista presenza spaziale secondo le regole di collocazione, collisione e facing già definite; non richiede refresh preventivo. Riutilizzare la semantica/API di teletrasporto esistente ove disponibile, senza inventare una nuova firma prima di verificarla.
+
+### API 170 — Teletrasporto non disattiva la routine
+Decisione confermata (opzione A): un **teletrasporto esplicito del developer** modifica la collocazione spaziale dell'NPC, ma **non cancella né disattiva la routine NQTR**. I successivi cambiamenti di attività NQTR continuano ad applicarsi normalmente. Non imporre un `rpgoria.routine.refresh()` automatico a ogni teletrasporto. Rispettare comunque le regole già confermate per cambio Room: cancellazione del movimento della vecchia Room e invalidazione dell'eventuale obiettivo sospeso (API 131–133). Distinguere presenza spaziale da stato della routine. Nessuna modifica al codice sorgente autorizzata.

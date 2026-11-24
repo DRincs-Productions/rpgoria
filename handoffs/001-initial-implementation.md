@@ -689,3 +689,13 @@ Decisione confermata (opzione A): se la posizione assegnata per la **ricomparsa*
 
 ### API 164 — Room senza coordinate: collocazione incompleta
 Decisione confermata (opzione A): una attività NQTR che specifica **solo la Room ma nessuna posizione** non colloca validamente un NPC. Rpgoria **emette un avviso non bloccante** e mantiene l'NPC **assente spazialmente** fino a quando una collocazione completa (Room e coordinate) sarà disponibile. Non usare automaticamente spawn predefiniti o l'ultima posizione nota. Conservare identità e stato logico; nessuno storico delle posizioni. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 165 — Nessun punto percorribile nella Room: NPC assente
+Decisione confermata (opzione A): se non esiste **alcuna posizione percorribile** nella Room di destinazione, non forzare il collocamento dentro ostacoli. L'NPC **rimane senza presenza spaziale**, conservando identità, registrazione e stato logico; **segnalare un avviso non bloccante** al developer. Coerente con API 140, 159, 161 e 163.
+
+### API 166 — Comandi di movimento su NPC spazialmente assente
+Decisione confermata (opzione A): se un NPC **non ha una posizione di partenza valida** perché è assente dalla Room, i comandi di movimento **non vengono avviati**; restituire un **esito appropriato** tramite il contratto tipizzato del movimento. Non accodare né avviare automaticamente il comando alla futura ricomparsa. Definire il dettaglio dell'esito in coerenza con gli stati e le API di movimento già concordati, senza inventare qui una nuova firma.
+
+### API 167 — Ricomparsa: preservare ultimo orientamento
+Decisione confermata (opzione A): quando un NPC ricompare tramite teletrasporto dopo un periodo senza presenza spaziale, **mantiene l'ultimo orientamento/facing noto**. Il solo teletrasporto di ricomparsa **non cambia automaticamente** la direzione verso cui guarda. Successivi movimenti o comandi espliciti possono modificarla secondo le regole già concordate. Nessuna modifica al codice sorgente autorizzata.

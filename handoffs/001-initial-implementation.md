@@ -669,3 +669,13 @@ Decisione confermata (opzione A): quando cambia l'attività NQTR di un NPC, il *
 
 ### API 158 — Attività senza destinazione/luogo: NPC svanisce dalla scena
 Decisione indicata dall'utente: quando l'attività di un NPC non fornisce una collocazione/destinazione spaziale, **l'NPC deve teletrasportarsi per svanire**, cioè non deve restare visibile nella posizione precedente. L'assenza di un luogo è considerata **quasi un errore/omissione del developer**, non una normale attività di permanenza in posizione. Interpretazione prudente: occultare/rimuovere la presenza scenica senza cancellare definitivamente l'identità o i dati logici del personaggio; **da confermare** la semantica esatta (rimozione da Room/registry, collocazione logica, gestione della ricomparsa) prima di codificarla. Non introdurre uno storico delle posizioni. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 159 — NPC senza collocazione: assente dalla Room, identità conservata
+Decisione confermata (opzione A): quando un NPC svanisce a causa di un'attività senza collocazione (API 158), **mantiene identità, registrazione e stato logico**, ma **non ha presenza spaziale nella Room**, non è renderizzato e **non occupa spazio nelle collisioni**. Non usare `rpgoria.characters.removeFromMap()` né cancellare definitivamente il personaggio. Lo stato di assenza deve essere distinto da invisibilità grafica di un personaggio ancora collocato nella Room.
+
+### API 160 — Ricomparsa diretta alla collocazione assegnata
+Decisione confermata (opzione A): quando un'attività successiva assegna nuovamente una **Room e una posizione valide** a un NPC precedentemente assente, Rpgoria **lo ricolloca direttamente** nella nuova posizione, senza animare un tragitto dall'ultima posizione prima della scomparsa. Ripristinare la presenza spaziale e la partecipazione alle collisioni secondo le regole della Room; nessuno storico delle posizioni richiesto.
+
+### API 161 — Collocazione mancante: avviso non bloccante e scomparsa
+Decisione confermata (opzione A): se un'attività NPC non specifica una collocazione, Rpgoria **segnala al developer un avviso non bloccante** tramite il sistema di segnalazione previsto, **fa svanire l'NPC** secondo API 158–159 e **consente al gioco di proseguire**. Non trattare come errore fatale né lasciare l'NPC nella precedente posizione. Verificare l'effettiva API di reporting Pixi'VN prima dell'implementazione. Nessuna modifica al codice sorgente autorizzata.

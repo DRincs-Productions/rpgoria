@@ -679,3 +679,13 @@ Decisione confermata (opzione A): quando un'attività successiva assegna nuovame
 
 ### API 161 — Collocazione mancante: avviso non bloccante e scomparsa
 Decisione confermata (opzione A): se un'attività NPC non specifica una collocazione, Rpgoria **segnala al developer un avviso non bloccante** tramite il sistema di segnalazione previsto, **fa svanire l'NPC** secondo API 158–159 e **consente al gioco di proseguire**. Non trattare come errore fatale né lasciare l'NPC nella precedente posizione. Verificare l'effettiva API di reporting Pixi'VN prima dell'implementazione. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 162 — Room inesistente: NPC assente, avviso non bloccante
+Decisione confermata (opzione A): se una attività NQTR assegna all'NPC una **Room inesistente**, Rpgoria **segnala un avviso non bloccante** e lascia l'NPC **registrato e con stato logico conservato, ma senza presenza spaziale**. Non mantenerlo nella Room precedente e non cancellarlo definitivamente. Applicare la semantica di assenza API 158–159 e 161.
+
+### API 163 — Ricomparsa dentro ostacolo: punto percorribile più vicino
+Decisione confermata (opzione A): se la posizione assegnata per la **ricomparsa** dell'NPC è dentro un ostacolo/non percorribile, Rpgoria cerca la **posizione valida e percorribile più vicina** e vi colloca direttamente l'NPC, senza animare il tragitto. Coordinare con la correzione della posizione al momento della visualizzazione della Room (API 139) e con la gestione di assenza di posizioni valide (API 140). Se non esiste alcuna posizione valida, non forzare il personaggio dentro un ostacolo; mantenere assenza spaziale secondo API 140/159, con reporting appropriato.
+
+### API 164 — Room senza coordinate: collocazione incompleta
+Decisione confermata (opzione A): una attività NQTR che specifica **solo la Room ma nessuna posizione** non colloca validamente un NPC. Rpgoria **emette un avviso non bloccante** e mantiene l'NPC **assente spazialmente** fino a quando una collocazione completa (Room e coordinate) sarà disponibile. Non usare automaticamente spawn predefiniti o l'ultima posizione nota. Conservare identità e stato logico; nessuno storico delle posizioni. Nessuna modifica al codice sorgente autorizzata.

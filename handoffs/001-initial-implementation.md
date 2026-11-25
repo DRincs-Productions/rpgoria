@@ -729,3 +729,13 @@ Decisione confermata (A): utilizzare le regole e funzionalità già disponibili 
 
 ### API 176 — Fallimento della creazione dell'attività temporanea
 Decisione confermata (A): se NQTR non riesce a creare l'attività temporanea necessaria al teletrasporto, segnalare il fallimento e non eseguire il teletrasporto, conservando la collocazione precedente. Evitare incoerenze tra NQTR e Rpgoria. Resta da precisare la gestione del movimento attivo e l'ordine delle operazioni in caso di fallimento. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 177 — Teletrasporto fallito: preservare il movimento attivo
+Decisione confermata (A): annullare il movimento precedente soltanto quando il teletrasporto può essere effettivamente eseguito. In caso di fallimento della validazione o dell'aggiornamento NQTR, mantenere collocazione e movimento attivo, senza sospensione o cancellazione.
+
+### API 178 — Ordine delle operazioni del teletrasporto
+Decisione confermata (A): validare prima la Room e la posizione di destinazione, aggiornare NQTR tramite attività temporanea se necessario (API 172, 174–176), quindi eseguire il teletrasporto annullando immediatamente il movimento attivo con motivo `teleport` (API 171, 177) e aggiornando la collocazione spaziale. Verificare la gestione delle notifiche sincrone NQTR per evitare aggiornamenti intermedi incoerenti; dettagli implementativi da verificare sulle API reali.
+
+### API 179 — Teletrasporto verso collocazione corrente: no-op
+Decisione confermata (A): se Room e coordinate richieste coincidono con quelle correnti, il comando è un no-op: nessuna modifica dello stato, nessuna attività temporanea NQTR, nessuna interruzione del movimento attivo. Nessuna modifica al codice sorgente autorizzata.

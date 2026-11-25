@@ -709,3 +709,13 @@ Decisione confermata (opzione A): il developer può assegnare direttamente a un 
 
 ### API 170 — Teletrasporto non disattiva la routine
 Decisione confermata (opzione A): un **teletrasporto esplicito del developer** modifica la collocazione spaziale dell'NPC, ma **non cancella né disattiva la routine NQTR**. I successivi cambiamenti di attività NQTR continuano ad applicarsi normalmente. Non imporre un `rpgoria.routine.refresh()` automatico a ogni teletrasporto. Rispettare comunque le regole già confermate per cambio Room: cancellazione del movimento della vecchia Room e invalidazione dell'eventuale obiettivo sospeso (API 131–133). Distinguere presenza spaziale da stato della routine. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 171 — Teletrasporto immediato durante movimento
+Decisione confermata (A): annullare immediatamente il movimento attivo con motivo `teleport` e collocare direttamente l'NPC nella destinazione, anche in grid senza attendere il completamento della cella.
+
+### API 172 — Teletrasporto e attività temporanea NQTR
+Decisione confermata (A), con precisazione dell'utente: NQTR deduce le attività NPC dalle routine. Teletrasportare un NPC in un altro luogo significa anche aggiungere una **attività temporanea NQTR per quel momento e luogo**, usando il meccanismo già gestito da NQTR secondo l'utente. Non creare un sistema parallelo di override in Rpgoria. Integra e precisa API 169–170: la routine originale non viene cancellata; la collocazione deve essere coerente con NQTR e i successivi cambi di attività. Verificare API, durata, sostituzione, precedenza e gestione errori effettive di NQTR prima di implementare; non assumere firme concrete. Un refresh deve rispettare l'attività effettiva NQTR, inclusa quella temporanea.
+
+### API 173 — Nuova attività senza collocazione per NPC già assente
+Decisione confermata (A): mantenere l'NPC assente, aggiornare l'attività logica e segnalare un avviso non bloccante per la nuova attività non valida. Non riutilizzare vecchie coordinate né sospendere la routine. Nessuna modifica al codice sorgente autorizzata.

@@ -719,3 +719,13 @@ Decisione confermata (A), con precisazione dell'utente: NQTR deduce le attività
 
 ### API 173 — Nuova attività senza collocazione per NPC già assente
 Decisione confermata (A): mantenere l'NPC assente, aggiornare l'attività logica e segnalare un avviso non bloccante per la nuova attività non valida. Non riutilizzare vecchie coordinate né sospendere la routine. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 174 — Teletrasporto nella stessa Room senza attività temporanea
+Decisione confermata (A): se cambiano soltanto le coordinate nella stessa Room/luogo NQTR, Rpgoria aggiorna la posizione senza modificare l'attività NQTR. Creare l'attività temporanea prevista da API 172 soltanto quando cambia il luogo NQTR.
+
+### API 175 — Durata delle attività temporanee delegata a NQTR
+Decisione confermata (A): utilizzare le regole e funzionalità già disponibili in NQTR per durata, scadenza e precedenza delle attività temporanee. Non introdurre una gestione temporale parallela in Rpgoria. Verificare le firme effettive NQTR prima di implementare.
+
+### API 176 — Fallimento della creazione dell'attività temporanea
+Decisione confermata (A): se NQTR non riesce a creare l'attività temporanea necessaria al teletrasporto, segnalare il fallimento e non eseguire il teletrasporto, conservando la collocazione precedente. Evitare incoerenze tra NQTR e Rpgoria. Resta da precisare la gestione del movimento attivo e l'ordine delle operazioni in caso di fallimento. Nessuna modifica al codice sorgente autorizzata.

@@ -759,3 +759,16 @@ Decisione confermata (A): distinguere destinazione esatta raggiunta, destinazion
 
 ### API 185 — Teletrasporto sempre asincrono
 Decisione confermata (B): `movement.teleport()` restituisce sempre una Promise del risultato tipizzato, anche se tutti i dati necessari sono già disponibili. Non introdurre firme miste sync/async. La natura asincrona non implica animazione o attesa del ticker: preservare la semantica di teletrasporto immediato al momento dell'esecuzione e l'ordine di validazione/aggiornamento NQTR/collocazione delle API 171 e 176–179. Verificare preparazione Room e API NQTR effettive; concorrenza tra richieste ancora da definire. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 186 — Stati del risultato di teleport()
+Decisione confermata (A): stati `reached`, `reached_nearest`, `unchanged`, `unreachable`, `cancelled`, `failed`. Includere collocazione effettiva quando disponibile (API 184).
+
+### API 187 — Teletrasporti concorrenti: ultima richiesta prevale
+Decisione confermata (A): una nuova richiesta per lo stesso personaggio annulla il precedente teletrasporto non ancora eseguito; la Promise precedente restituisce `cancelled`. Evitare effetti tardivi della richiesta annullata, inclusi aggiornamenti NQTR; verificare fattibilità e confine di commit sulle API reali NQTR.
+
+### API 188 — Movimento attivo durante preparazione asincrona
+Decisione confermata (A): il movimento già attivo continua durante la preparazione del teletrasporto e viene annullato soltanto all'effettiva esecuzione, coerentemente con API 177–178.
+
+### API 189 — Rifiutare nuovi comandi di movimento durante teletrasporto pendente
+Decisione confermata (C): non ammettere nuovi `moveTo()` o `setDirection()` per il personaggio interessato finché il teletrasporto non termina. Non accodare tali comandi. Il movimento già attivo continua secondo API 188; un nuovo teletrasporto può sostituire quello pendente secondo API 187. Dettagli dell'esito del rifiuto e interazione con aggiornamenti automatici NQTR da definire. Nessuna modifica al codice sorgente autorizzata.

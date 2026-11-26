@@ -739,3 +739,13 @@ Decisione confermata (A): validare prima la Room e la posizione di destinazione,
 
 ### API 179 — Teletrasporto verso collocazione corrente: no-op
 Decisione confermata (A): se Room e coordinate richieste coincidono con quelle correnti, il comando è un no-op: nessuna modifica dello stato, nessuna attività temporanea NQTR, nessuna interruzione del movimento attivo. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 180 — Metodo pubblico movement.teleport()
+Decisione confermata (A): esporre il teletrasporto nel singleton `movement`, insieme a `moveTo()` e `setDirection()`.
+
+### API 181 — Room opzionale nel teletrasporto
+Decisione confermata (A): se la Room non è specificata, utilizzare la Room corrente del personaggio. Per un NPC senza presenza spaziale richiedere esplicitamente la Room di destinazione. Firma proposta, non ancora definitivamente confermata: `movement.teleport(characterId, { x, y, roomId? })`; verificare tipi ufficiali NQTR/Pixi'VN.
+
+### API 182 — Destinazione non percorribile: correzione automatica
+Decisione confermata (A): cercare la posizione percorribile più vicina alla destinazione richiesta, coerentemente con API 163. Se non esiste alcuna posizione valida, il teletrasporto esplicito fallisce preservando stato, collocazione e movimento precedenti (API 176–178); distinguere questo caso dalla ricomparsa automatica di un NPC assente (API 165). Nessuna modifica al codice sorgente autorizzata.

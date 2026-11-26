@@ -789,3 +789,16 @@ Decisione confermata (A): riutilizzare `cancelled` con motivo `teleport` per il 
 
 ### API 194 — Preparazione parallela dei teletrasporti
 Decisione confermata (A): personaggi diversi possono preparare teletrasporti indipendentemente e in parallelo. Rivalidare la destinazione prima dell'effettiva esecuzione. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 195 — Room autorevole da NQTR; proprietà grafica facoltativa
+Decisione personalizzata dell'utente: la Room del personaggio viene ottenuta tramite le API NQTR. La classe RPG del personaggio può contenere anche la Room oltre alla posizione, a discrezione del developer; non imporre tale proprietà nell'interfaccia grafica RPG. Non duplicare una fonte autorevole della Room in Rpgoria. La scelta del metodo pubblico getState e della sua collocazione non è stata esplicitamente confermata e resta da precisare.
+
+### API 196 — Snapshot readonly
+Decisione confermata (A): lo stato restituito è una copia readonly dello stato corrente; modifiche tramite API pubbliche, non tramite riferimenti allo stato interno.
+
+### API 197 — Stato logico di personaggio spazialmente assente
+Decisione confermata (A): personaggio registrato ma assente mantiene stato logico interrogabile, senza posizione o Room spaziale valida. Distinguere la Room spaziale dalla collocazione dedotta tramite NQTR (API 195); non imporre una proprietà roomId duplicata nel componente grafico. 
+
+### API 198 — Indicatore isTeleporting
+Decisione confermata (A): esporre isTeleporting nello snapshot dello stato per indicare la presenza di una richiesta di teletrasporto pendente per il personaggio. Nessuna modifica al codice sorgente autorizzata.

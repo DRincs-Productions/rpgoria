@@ -776,3 +776,16 @@ Decisione confermata (C): non ammettere nuovi `moveTo()` o `setDirection()` per 
 
 ### API 190 — Due code logiche per movimento e teletrasporto, comuni a MC e NPC
 Decisione espressa direttamente dall'utente: introdurre due code, una per movimenti e una per teletrasporti, con identiche regole per MC e NPC. Un nuovo movimento sostituisce il movimento attuale dello stesso personaggio; se esiste un teletrasporto pendente per quel personaggio, annullare il nuovo comando di movimento. Un nuovo teletrasporto annulla e sostituisce il teletrasporto pendente dello stesso personaggio; non interrompe i movimenti già attivi durante la preparazione. All'effettiva esecuzione del teletrasporto annullare i movimenti dello stesso personaggio. Se il teletrasporto fallisce preservare il movimento precedente (API 177–188). Coerente con API 189 C. Interpretazione proposta: due strutture indicizzate per characterId, al massimo una richiesta per tipo per personaggio, non FIFO; due Map sono una proposta implementativa, non una firma pubblica confermata. Non alterare le regole grid di completamento cella per la sostituzione ordinaria di movimento. Esito preciso dei comandi rifiutati, interazione con routine e rimozione definitiva restano da definire; le precedenti opzioni proposte 190–193 non sono state confermate come blocco. Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 191 — Conflitti con attività NQTR delegati a NQTR e developer
+Decisione personalizzata dell'utente: la gestione delle attività delle routine è di NQTR; Rpgoria ignora i conflitti tra aggiornamenti NQTR e teletrasporti pendenti, senza introdurre arbitraggio o protezioni aggiuntive. Eventuali errori causati dalla gestione delle attività sono responsabilità del developer. Non interpretare questo come eliminazione dell'integrazione ordinaria delle routine NQTR già concordata. La frase dell'utente è: «viene gestita da nqrt, e rpg lo ignora. Può causare errori ma é un problema del Dev.»
+
+### API 192 — Rimozione definitiva: svuotare entrambe le code
+Decisione confermata (A): removeFromMap() annulla e rimuove movimento e teletrasporto pendente del personaggio, impedendo aggiornamenti tardivi e ricomparsa dovuta alla richiesta annullata.
+
+### API 193 — Movimento rifiutato per teletrasporto pendente
+Decisione confermata (A): riutilizzare `cancelled` con motivo `teleport` per il risultato del moveTo() rifiutato durante un teletrasporto pendente. Non introdurre nuovi stati o motivi.
+
+### API 194 — Preparazione parallela dei teletrasporti
+Decisione confermata (A): personaggi diversi possono preparare teletrasporti indipendentemente e in parallelo. Rivalidare la destinazione prima dell'effettiva esecuzione. Nessuna modifica al codice sorgente autorizzata.

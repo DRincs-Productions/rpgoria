@@ -749,3 +749,13 @@ Decisione confermata (A): se la Room non è specificata, utilizzare la Room corr
 
 ### API 182 — Destinazione non percorribile: correzione automatica
 Decisione confermata (A): cercare la posizione percorribile più vicina alla destinazione richiesta, coerentemente con API 163. Se non esiste alcuna posizione valida, il teletrasporto esplicito fallisce preservando stato, collocazione e movimento precedenti (API 176–178); distinguere questo caso dalla ricomparsa automatica di un NPC assente (API 165). Nessuna modifica al codice sorgente autorizzata.
+
+
+### API 183 — Firma pubblica del teletrasporto
+Decisione confermata (A): `movement.teleport(characterId, { x, y, roomId? })`. Usare un unico oggetto destinazione e i tipi ufficiali delle dipendenze ove applicabili; Room obbligatoria semanticamente per NPC assente (API 181).
+
+### API 184 — Risultato tipizzato del teletrasporto
+Decisione confermata (A): distinguere destinazione esatta raggiunta, destinazione corretta raggiunta, no-op e fallimento; includere la collocazione effettiva quando disponibile. I nomi esatti degli stati e la struttura del risultato restano da confermare; riutilizzare ove opportuno la nomenclatura di moveTo.
+
+### API 185 — Teletrasporto sempre asincrono
+Decisione confermata (B): `movement.teleport()` restituisce sempre una Promise del risultato tipizzato, anche se tutti i dati necessari sono già disponibili. Non introdurre firme miste sync/async. La natura asincrona non implica animazione o attesa del ticker: preservare la semantica di teletrasporto immediato al momento dell'esecuzione e l'ordine di validazione/aggiornamento NQTR/collocazione delle API 171 e 176–179. Verificare preparazione Room e API NQTR effettive; concorrenza tra richieste ancora da definire. Nessuna modifica al codice sorgente autorizzata.
